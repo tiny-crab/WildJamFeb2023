@@ -1,94 +1,114 @@
 extends KinematicBody2D
 
+
+const UP = Vector2(0, -1)
 const GRAVITY = 600.0
 const ACCELERATION = 500
 const MAX_SPEED = 120
 const TERMINAL_SPEED = 120
 const FRICTION = 800
 const JUMP_VELOCITY = -200
+const CHAIN_PULL = 105
+
+#controls logs indicating what state the player is in
+const STATE_DEBUG = false
 
 enum {
-    MOVE,
-    ROLL,
-    ATTACK
+    GROUND,
+    JUMP,
+    GRAPPLE
 }
 
-var state = MOVE
+var state = GROUND
 var velocity = Vector2.ZERO
+var hook_velocity = Vector2.ZERO
 var interactable = null
 
 onready var animationPlayer = $AnimationPlayer
-#onready var animationTree = $AnimationTree
-#onready var animationState = animationTree.get("parameters/playback")
- 
+onready var grapplingHook = $GrappleHook
+    
 signal player_can_interact(area)
 signal player_interacted(area)
-    
+   
 func _process(delta):
-    var input_vector = Vector2.ZERO
-    input_vector.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
-    input_vector = input_vector.normalized()
-    if input_vector != Vector2.ZERO:
-        #animationTree.set("parameters/Idle/blend_position", input_vector)
-        #animationTree.set("parameters/Run/blend_position", input_vector)
-        #animationTree.set("parameters/Attack/blend_position", input_vector)
-        #animationState.travel("Run")
-        velocity.x = velocity.move_toward(input_vector * MAX_SPEED, ACCELERATION * delta).x
-    else:
-        #animationState.travel("Idle")
-        velocity.x = 0
-        velocity = velocity.move_toward(velocity, FRICTION * delta)
-        
-    #TODO: make sure jump action can only be performed on ground, or if double jump is enabled
-    if Input.is_action_just_pressed("jump"):
+    #MOVEMENT
+    match state:
+        GROUND:
+            move_ground(delta)
+            if STATE_DEBUG:
+                print("Ground")
+        JUMP:
+            move_jump(delta)
+            if STATE_DEBUG:
+                print("Jump")
+        GRAPPLE:
+            move_grapple(delta)
+            if STATE_DEBUG:
+                print("Grapple")
+            
+    if Input.is_action_just_pressed("jump") and state == GROUND:
         velocity.y = JUMP_VELOCITY
-    velocity = move_and_slide(velocity)
+        state = JUMP
+        
+    if Input.is_action_just_pressed("grapple"):
+        print("grappling")
+        grapplingHook.shoot(get_local_mouse_position())
+        state = GRAPPLE
+        
+    if Input.is_action_just_released("grapple"):
+        grapplingHook.release()
+        state = JUMP    
+                
+    velocity = move_and_slide(velocity, UP)
     
+    
+    #INTERACTIONS
     if Input.is_action_just_pressed("interact") and interactable != null:
         print("Interacted with %s" % interactable.name)
         emit_signal("player_interacted", interactable)
-    
-    
-    """match state:
-        MOVE:
-            move_state(delta)
-        ROLL:
-            pass
-        ATTACK:
-            attack_state(delta)"""
+        
     
 func _physics_process(delta):
-    velocity.y += delta * GRAVITY
-    #move_and_collide(motion)	
+    if state == JUMP:
+        velocity.y += delta * GRAVITY
     
-        
-func move_state(delta):
+func move_ground(delta):
     var input_vector = Vector2.ZERO
     input_vector.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
-    #print(input_vector.x)
-    #input_vector.y = Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
     input_vector = input_vector.normalized()
     if input_vector != Vector2.ZERO:
-        #animationTree.set("parameters/Idle/blend_position", input_vector)
-        #animationTree.set("parameters/Run/blend_position", input_vector)
-        #animationTree.set("parameters/Attack/blend_position", input_vector)
-        #animationState.travel("Run")
-        velocity = velocity.move_toward(input_vector * MAX_SPEED, ACCELERATION * delta)
+        velocity.x = velocity.move_toward(input_vector * MAX_SPEED, ACCELERATION * delta).x
     else:
-        #animationState.travel("Idle")
-        velocity = velocity.move_toward(Vector2.ZERO, FRICTION * delta)
-        
-    velocity = move_and_slide(velocity)
+        velocity.x = 0
+        velocity = velocity.move_toward(velocity, FRICTION * delta)
     
-    if Input.is_action_just_pressed("attack"):
-        state = ATTACK
+func move_jump(delta):
     
-func attack_state(delta):
-    velocity = Vector2.ZERO
-    #animationState.travel("Attack")
+    var input_vector = Vector2.ZERO
+    input_vector.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
+    input_vector = input_vector.normalized()
+    if input_vector != Vector2.ZERO:
+        velocity.x = velocity.move_toward(input_vector * MAX_SPEED, ACCELERATION * delta).x
     
-func attack_animation_finished():
-    state = MOVE
+    if is_on_floor() and velocity.y >= 0:
+        state = GROUND
+
+func move_grapple(delta):
+    var input_vector = Vector2.ZERO
+    input_vector.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
+    input_vector = input_vector.normalized()
+    
+    hook_velocity = to_local(grapplingHook.tip).normalized() * CHAIN_PULL * delta
+    hook_velocity.x *= 1.65
+    velocity += hook_velocity
+    if sign(input_vector.x) != sign(hook_velocity.x):
+        hook_velocity.x *= 0.7
+    
+    
+    
+
+
+# INTERACTIONS
 
 func _on_InteractHitbox_area_entered(area):
     var node = area.get_owner()
