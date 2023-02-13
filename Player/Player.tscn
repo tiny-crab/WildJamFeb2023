@@ -43,6 +43,10 @@ position = Vector2( 0, -16 )
 scale = Vector2( 0.3, 0.3 )
 z_index = -1
 
+[node name="Camera2D" type="Camera2D" parent="."]
+current = true
+smoothing_enabled = true
+
 [connection signal="area_entered" from="InteractHitbox" to="." method="_on_InteractHitbox_area_entered"]
 [connection signal="area_exited" from="InteractHitbox" to="." method="_on_InteractHitbox_area_exited"]
 
