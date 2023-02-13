@@ -14,6 +14,10 @@ config/name="WildJamFeb2023"
 run/main_scene="res://Player Test World/TestWorld.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+SignalBus="*res://Globals/SignalBus.tscn"
+
 [gui]
 
 common/drop_mouse_on_gui_input_disabled=true
