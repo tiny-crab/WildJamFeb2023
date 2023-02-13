@@ -21,6 +21,7 @@ region_rect = Rect2( 0, 0, 16, 12 )
 region_filter_clip = true
 
 [node name="Hook" type="KinematicBody2D" parent="."]
+collision_layer = 4
 __meta__ = {
 "_edit_group_": true
 }
