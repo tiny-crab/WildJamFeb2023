@@ -18,6 +18,5 @@ func _on_Player_interacted(node):
 func _on_InteractHurtbox_area_entered(area):
     notification.show()
 
-
 func _on_InteractHurtbox_area_exited(area):
     notification.hide()
