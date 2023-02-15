@@ -11,26 +11,25 @@ height = 14.0
 [node name="GrappleHook" type="Node2D"]
 script = ExtResource( 3 )
 
-[node name="ChainSprite" type="Sprite" parent="."]
-position = Vector2( -8, 15 )
-texture = ExtResource( 2 )
-centered = false
-offset = Vector2( 0, -8 )
-region_enabled = true
-region_rect = Rect2( 0, 0, 16, 12 )
-region_filter_clip = true
-
 [node name="Hook" type="KinematicBody2D" parent="."]
 collision_layer = 4
-__meta__ = {
-"_edit_group_": true
-}
 
 [node name="HookSprite" type="Sprite" parent="Hook"]
+position = Vector2( 0, -3 )
 texture = ExtResource( 1 )
+region_rect = Rect2( 0, 0, 16, 0 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hook"]
 position = Vector2( 0, -2 )
 shape = SubResource( 1 )
 
 [node name="GrappleTimer" type="Timer" parent="."]
+
+[node name="ChainSprite" type="Sprite" parent="."]
+position = Vector2( -8, 13 )
+texture = ExtResource( 2 )
+centered = false
+offset = Vector2( 0, -8 )
+region_enabled = true
+region_rect = Rect2( 0, 0, 16, 12 )
+region_filter_clip = true
