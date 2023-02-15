@@ -9,6 +9,8 @@ const TERMINAL_SPEED = 120
 const FRICTION = 800
 const JUMP_VELOCITY = -200
 const CHAIN_PULL = 105
+const SHOTGUN_OFFSET = 20
+const SHOTGUN_CENTER_OFFSET = Vector2(0, -12)
 
 #controls logs indicating what state the player is in
 const STATE_DEBUG = false
@@ -27,8 +29,11 @@ var max_grapple_charges = 3
 var grapple_charges = max_grapple_charges
 var interactable = null
 
+onready var Player = $PlayerSprite
 onready var animationPlayer = $AnimationPlayer
 onready var grapplingHook = $GrappleHook
+onready var ShotgunPosition = $ShotgunPosition
+onready var Shotgun = $ShotgunPosition/Shotgun
     
 signal player_can_interact(area)
 signal player_interacted(area)
@@ -37,6 +42,7 @@ func _ready():
     grapplingHook.connect("grappling_released", self, "_on_grappling_released")
    
 func _process(delta):
+    update()
     #MOVEMENT
     match state:
         GROUND:
@@ -69,12 +75,17 @@ func _process(delta):
                 
     velocity = move_and_slide(velocity, UP)
     
+    #WEAPONS
+    aim_shotgun()
+    
+    if Input.is_action_just_pressed("attack"):
+        Shotgun.shoot()
     
     #INTERACTIONS
     if Input.is_action_just_pressed("interact") and interactable != null:
         print("Interacted with %s" % interactable.name)
         emit_signal("player_interacted", interactable)
-        
+           
 func _on_grappling_released():
     print("grappling released")
     state = JUMP
@@ -116,8 +127,20 @@ func move_grapple(delta):
         hook_velocity.x *= 0.7
     velocity += hook_velocity
     
+#WEAPONS
+
+func aim_shotgun():
+    #Aiming
+    var cursor_position = get_local_mouse_position().normalized() * SHOTGUN_OFFSET
+    var look_at_position = get_local_mouse_position().normalized() * SHOTGUN_OFFSET * 10
+    #Make sure the shotgun sprite is always in the right orientation
+    if cursor_position.x > 0:
+        ShotgunPosition.set_scale(Vector2(1, 1))
+    else:
+        ShotgunPosition.set_scale(Vector2(1, -1))
+    ShotgunPosition.position = cursor_position + SHOTGUN_CENTER_OFFSET
     
-    
+    ShotgunPosition.look_at(to_global(look_at_position))
 
 
 # INTERACTIONS
