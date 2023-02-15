@@ -18,3 +18,15 @@ hframes = 8
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( 0, -1 )
 shape = SubResource( 1 )
+
+[node name="LedgeCheckRight" type="RayCast2D" parent="."]
+position = Vector2( 4, 6 )
+enabled = true
+cast_to = Vector2( 0, 4 )
+collide_with_areas = true
+
+[node name="LedgeCheckLeft" type="RayCast2D" parent="."]
+position = Vector2( -3, 6 )
+enabled = true
+cast_to = Vector2( 0, 4 )
+collide_with_areas = true
