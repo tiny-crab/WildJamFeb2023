@@ -1,6 +1,10 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://UI/ShrineUI.gd" type="Script" id=1]
+[ext_resource path="res://UI/CurseSelection.tscn" type="PackedScene" id=2]
+
+[sub_resource type="Theme" id=1]
+Label/colors/font_color = Color( 0.678431, 0.231373, 0.231373, 1 )
 
 [node name="ShrineUI" type="Control"]
 anchor_right = 1.0
@@ -11,15 +15,82 @@ script = ExtResource( 1 )
 margin_right = 1024.0
 margin_bottom = 128.0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
-margin_left = 488.0
-margin_top = 54.0
-margin_right = 535.0
-margin_bottom = 74.0
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_left = 952.0
+margin_top = 8.0
+margin_right = 1016.0
+margin_bottom = 112.0
+__meta__ = {
+"_edit_group_": true
+}
 
-[node name="CloseButton" type="Button" parent="HBoxContainer"]
-margin_right = 47.0
+[node name="BuyButton" type="Button" parent="VBoxContainer"]
+margin_right = 64.0
 margin_bottom = 20.0
+text = "Buy"
+
+[node name="CloseButton" type="Button" parent="VBoxContainer"]
+margin_top = 24.0
+margin_right = 64.0
+margin_bottom = 44.0
 text = "Close"
 
-[connection signal="pressed" from="HBoxContainer/CloseButton" to="." method="_on_CloseButton_pressed"]
+[node name="CurseSelections" type="HBoxContainer" parent="."]
+margin_left = 24.0
+margin_top = 16.0
+margin_right = 304.0
+margin_bottom = 104.0
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CurseSelection" parent="CurseSelections" instance=ExtResource( 2 )]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 0.0
+margin_top = 0.0
+margin_right = 90.0
+margin_bottom = 88.0
+size_flags_horizontal = 3
+
+[node name="CurseSelection2" parent="CurseSelections" instance=ExtResource( 2 )]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 94.0
+margin_top = 0.0
+margin_right = 185.0
+margin_bottom = 88.0
+size_flags_horizontal = 3
+
+[node name="CurseSelection3" parent="CurseSelections" instance=ExtResource( 2 )]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 189.0
+margin_top = 0.0
+margin_right = 280.0
+margin_bottom = 88.0
+size_flags_horizontal = 3
+
+[node name="CurseDescription" type="Label" parent="."]
+margin_left = 344.0
+margin_top = 40.0
+margin_right = 808.0
+margin_bottom = 88.0
+text = "Test description"
+
+[node name="CurseValue" type="Label" parent="."]
+margin_left = 344.0
+margin_top = 80.0
+margin_right = 410.0
+margin_bottom = 94.0
+theme = SubResource( 1 )
+text = "Test Value"
+
+[connection signal="pressed" from="VBoxContainer/BuyButton" to="." method="_on_BuyButton_pressed"]
+[connection signal="pressed" from="VBoxContainer/CloseButton" to="." method="_on_CloseButton_pressed"]

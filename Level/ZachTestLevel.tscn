@@ -13,7 +13,7 @@
 position = Vector2( 448, 400 )
 
 [node name="Shrine" parent="." instance=ExtResource( 3 )]
-position = Vector2( 704, 304 )
+position = Vector2( 704, 480 )
 
 [node name="TileMap" parent="." instance=ExtResource( 1 )]
 cell_size = Vector2( 16, 16 )

@@ -5,6 +5,7 @@ const UP = Vector2(0, -1)
 const GRAVITY = 600.0
 const ACCELERATION = 500
 const MAX_SPEED = 120
+onready var modified_speed = MAX_SPEED
 const TERMINAL_SPEED = 120
 const FRICTION = 800
 const JUMP_VELOCITY = -200
@@ -40,6 +41,7 @@ signal player_interacted(area)
 
 func _ready():
     grapplingHook.connect("grappling_released", self, "_on_grappling_released")
+    SignalBus.add_listener("curse_purchased", self, "_on_curse_purchased")
    
 func _process(delta):
     update()
@@ -99,7 +101,7 @@ func move_ground(delta):
     input_vector.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
     input_vector = input_vector.normalized()
     if input_vector != Vector2.ZERO:
-        velocity.x = velocity.move_toward(input_vector * MAX_SPEED, ACCELERATION * delta).x
+        velocity.x = velocity.move_toward(input_vector * modified_speed, ACCELERATION * delta).x
     else:
         velocity.x = 0
         velocity = velocity.move_toward(velocity, FRICTION * delta)
@@ -110,7 +112,7 @@ func move_jump(delta):
     input_vector.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
     input_vector = input_vector.normalized()
     if input_vector != Vector2.ZERO:
-        velocity.x = velocity.move_toward(input_vector * MAX_SPEED, ACCELERATION * delta).x
+        velocity.x = velocity.move_toward(input_vector * modified_speed, ACCELERATION * delta).x
     
     if is_on_floor() and velocity.y >= 0:
         grapple_charges = max_grapple_charges
@@ -158,3 +160,9 @@ func _on_InteractHitbox_area_exited(area):
     print("Stopped colliding with %s" % area.name)
     if (area.name == interactable.name): 
         interactable = null
+
+
+# CURSES
+
+func _on_curse_purchased(curse):
+    modified_speed -= 50
