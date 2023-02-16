@@ -5,9 +5,14 @@ const DAMAGE_DROPOFF_MODIFIER = 2
 
 onready var raycast = $RayCast2D
 onready var shotgunSprite = $ShotgunSprite
+onready var animationPlayer = $AnimationPlayer
 
-var enable_knockback = true
+var enable_self_knockback = false
 var knockback_force = 100
+
+func _ready():
+    #ensure shotgun starts at frame 0
+    shotgunSprite.frame = 0
 
 func _process(delta):
     pass
@@ -15,6 +20,7 @@ func _process(delta):
 func shoot():
     print("Bang")
     print(to_global(raycast.cast_to).normalized())
+    animationPlayer.play("Fire")
     if raycast.is_colliding():
         var hit_object = raycast.get_collider()
         #TODO make list of hittable scenes and tack that way if we have more than one enemey type

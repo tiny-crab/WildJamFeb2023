@@ -146,7 +146,7 @@ func aim_shotgun():
         ShotgunPosition.set_scale(Vector2(1, 1))
     else:
         ShotgunPosition.set_scale(Vector2(1, -1))
-    ShotgunPosition.position = cursor_position + SHOTGUN_CENTER_OFFSET
+    #ShotgunPosition.position = cursor_position + SHOTGUN_CENTER_OFFSET
     
     ShotgunPosition.look_at(to_global(look_at_position))
 
