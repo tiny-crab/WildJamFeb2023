@@ -8,7 +8,7 @@ func _ready():
     
 func _on_Player_interacted(node):
     if (node.name == name):
-        get_owner().get_node("ShrineUI").show()
+        get_owner().get_node("CanvasLayer/ShrineUI").show()
 
 func _on_InteractHurtbox_area_entered(area):
     notification.show()
