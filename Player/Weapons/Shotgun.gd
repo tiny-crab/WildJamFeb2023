@@ -6,7 +6,7 @@ const DAMAGE_DROPOFF_MODIFIER = 2
 onready var raycast = $RayCast2D
 onready var shotgunSprite = $ShotgunSprite
 
-var enable_knockback = false
+var enable_knockback = true
 var knockback_force = 100
 
 func _process(delta):
@@ -14,11 +14,14 @@ func _process(delta):
 
 func shoot():
     print("Bang")
+    print(to_global(raycast.cast_to).normalized())
     if raycast.is_colliding():
         var hit_object = raycast.get_collider()
         #TODO make list of hittable scenes and tack that way if we have more than one enemey type
         if hit_object.name == "Minion":
-            hit_object.take_damage(20)
+            var knockback_direction = raycast.get_collision_normal()
+            knockback_direction.x *= -1
+            hit_object.take_damage(20, knockback_direction * knockback_force)
     
 func apply_damage(enemy):
     pass

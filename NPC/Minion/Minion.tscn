@@ -30,3 +30,9 @@ position = Vector2( -3, 6 )
 enabled = true
 cast_to = Vector2( 0, 4 )
 collide_with_areas = true
+
+[node name="HitDelay" type="Timer" parent="."]
+wait_time = 0.083
+
+[node name="KnockbackPeriod" type="Timer" parent="."]
+wait_time = 0.083
