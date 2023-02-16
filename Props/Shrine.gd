@@ -1,18 +1,21 @@
 extends Node2D
+class_name Shrine
 
-onready var notification = get_node("InteractNotification")
+export(bool) var isCurseShrine = true
+var animationString = ""
+
+func get_class():
+    return "Shrine"
 
 func _ready():
-    var player = get_parent().get_node("Player")
-    player.connect("player_interacted", self, "_on_Player_interacted")
-    
-func _on_Player_interacted(node):
-    if (node.name == name):
-        get_owner().get_node("ShrineUI").show()
+    animationString = "PlayerNearCurse" if isCurseShrine else "PlayerNearBoon"
+    $AnimatedSprite.play(animationString)
+    $AnimatedSprite.stop()
 
 func _on_InteractHurtbox_area_entered(area):
-    notification.show()
-
+    $InteractNotification.show()
+    $AnimatedSprite.play(animationString)
 
 func _on_InteractHurtbox_area_exited(area):
-    notification.hide()
+    $InteractNotification.hide()
+    $AnimatedSprite.stop()

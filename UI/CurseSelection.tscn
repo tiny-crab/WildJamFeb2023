@@ -2,7 +2,7 @@
 
 [ext_resource path="res://UI/CurseSelection.gd" type="Script" id=1]
 
-[node name="CurseSelection" type="Button"]
+[node name="CurseSelection" type="CheckBox"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5

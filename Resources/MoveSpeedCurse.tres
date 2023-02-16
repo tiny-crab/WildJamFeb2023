@@ -6,3 +6,4 @@
 script = ExtResource( 1 )
 name = "Move Speed -"
 description = "Your legs feel like jelly."
+value = 1
