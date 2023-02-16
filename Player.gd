@@ -35,13 +35,14 @@ onready var animationPlayer = $AnimationPlayer
 onready var grapplingHook = $GrappleHook
 onready var ShotgunPosition = $ShotgunPosition
 onready var Shotgun = $ShotgunPosition/Shotgun
-    
-signal player_can_interact(area)
+
 signal player_interacted(area)
+signal interacted_with_shrine(isCurseShrine)
 
 func _ready():
     grapplingHook.connect("grappling_released", self, "_on_grappling_released")
     SignalBus.add_listener("curse_purchased", self, "_on_curse_purchased")
+    SignalBus.add_emitter("interacted_with_shrine", self)
    
 func _process(delta):
     update()
@@ -86,7 +87,12 @@ func _process(delta):
     #INTERACTIONS
     if Input.is_action_just_pressed("interact") and interactable != null:
         print("Interacted with %s" % interactable.name)
-        emit_signal("player_interacted", interactable)
+        if (interactable.get_class() == "Shrine"):
+            _on_Interacted_with_Shrine(interactable)
+        elif (interactable.get_class() == "Key"):
+            _on_Interacted_with_Key(interactable)
+        else:
+            push_warning("Attempted to interact with an Interactable without a class")
            
 func _on_grappling_released():
     print("grappling released")
@@ -149,18 +155,19 @@ func aim_shotgun():
 
 func _on_InteractHitbox_area_entered(area):
     var node = area.get_owner()
-    print("Collided with %s" % node.name)
     interactable = node
-    emit_signal("player_can_interact", interactable)
-
 
 func _on_InteractHitbox_area_exited(area):
-# warning-ignore:unused_variable
     var node = area.get_owner()
-    print("Stopped colliding with %s" % area.name)
-    if (area.name == interactable.name): 
+    if (node.name == interactable.name):
         interactable = null
 
+func _on_Interacted_with_Shrine(node):
+    emit_signal("interacted_with_shrine", node.isCurseShrine)
+    pass
+
+func _on_Interacted_with_Key(node):
+    pass
 
 # CURSES
 

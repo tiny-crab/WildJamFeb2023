@@ -13,9 +13,15 @@ _global_script_classes=[ {
 "class": "Curse",
 "language": "GDScript",
 "path": "res://Resources/Curse.gd"
+}, {
+"base": "Node2D",
+"class": "Shrine",
+"language": "GDScript",
+"path": "res://Props/Shrine.gd"
 } ]
 _global_script_class_icons={
-"Curse": ""
+"Curse": "",
+"Shrine": ""
 }
 
 [application]

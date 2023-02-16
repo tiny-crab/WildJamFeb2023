@@ -7,3 +7,4 @@ script = ExtResource( 1 )
 name = "Fall Damage"
 description = "Your knees feel like they break apart at the slightest impact."
 value = 3
+isCurse = true

@@ -1,14 +1,15 @@
 [gd_scene load_steps=8 format=2]
 
-[ext_resource path="res://Level/Tilemap.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Player/Player.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Props/Shrine.tscn" type="PackedScene" id=3]
 [ext_resource path="res://UI/ShrineUI.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Props/Key.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Props/BossDoor.tscn" type="PackedScene" id=6]
-[ext_resource path="res://Tilemap2.tscn" type="PackedScene" id=7]
+[ext_resource path="res://Level/Tilemap2.tscn" type="PackedScene" id=7]
+[ext_resource path="res://Level/ZachTestLevel.gd" type="Script" id=8]
 
 [node name="Level" type="Node2D"]
+script = ExtResource( 8 )
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
 position = Vector2( 368, 480 )
@@ -16,8 +17,9 @@ position = Vector2( 368, 480 )
 [node name="Shrine" parent="." instance=ExtResource( 3 )]
 position = Vector2( 704, 480 )
 
-[node name="TileMap" parent="." instance=ExtResource( 1 )]
-cell_size = Vector2( 16, 16 )
+[node name="Shrine2" parent="." instance=ExtResource( 3 )]
+position = Vector2( 496, 480 )
+isCurseShrine = false
 
 [node name="Key" parent="." instance=ExtResource( 5 )]
 position = Vector2( 560, 384 )

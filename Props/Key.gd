@@ -4,6 +4,9 @@ signal key_pickup(node)
 
 onready var notification = get_node("InteractNotification")
 
+func get_class():
+    return "Key"
+
 func _ready():
     var player = get_parent().get_node("Player")
     player.connect("player_interacted", self, "_on_Player_interacted")
