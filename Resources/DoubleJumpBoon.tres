@@ -5,6 +5,6 @@
 [resource]
 script = ExtResource( 1 )
 name = "Jump +"
-description = "Your body and air meet in a lithe dance."
+description = "The air rushes around your body in a lithe dance."
 value = 4
 isCurse = false

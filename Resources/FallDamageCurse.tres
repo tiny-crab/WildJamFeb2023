@@ -5,6 +5,6 @@
 [resource]
 script = ExtResource( 1 )
 name = "Fall Damage"
-description = "Your knees feel like they break apart at the slightest impact."
+description = "Your knees feel like they would break apart at the slightest impact."
 value = 3
 isCurse = true

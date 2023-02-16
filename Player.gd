@@ -171,5 +171,7 @@ func _on_Interacted_with_Key(node):
 
 # CURSES
 
-func _on_curse_purchased(curse):
+func _on_curse_purchased(curses):
+    for curse in curses:
+        print("Purchased %s" % curse.name)
     modified_speed -= 50
