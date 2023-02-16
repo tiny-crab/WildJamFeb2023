@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/spr_idle_strip9.png-96f893a68cdc411448734c6d3167355a.stex"
+path="res://.import/Shotgun.png-11bd79cc24cb4f90bc68dd19104c363d.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Temp Assets/FarmAssets/SUNNYSIDE_WORLD_GOBLIN_V0.1/PNG/spr_idle_strip9.png"
-dest_files=[ "res://.import/spr_idle_strip9.png-96f893a68cdc411448734c6d3167355a.stex" ]
+source_file="res://Temp Assets/Shotgun.png"
+dest_files=[ "res://.import/Shotgun.png-11bd79cc24cb4f90bc68dd19104c363d.stex" ]
 
 [params]
 
@@ -31,5 +31,5 @@ process/invert_color=false
 process/normal_map_invert_y=false
 stream=false
 size_limit=0
-detect_3d=true
+detect_3d=false
 svg/scale=1.0
