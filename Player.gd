@@ -12,6 +12,7 @@ const JUMP_VELOCITY = -200
 const CHAIN_PULL = 105
 const SHOTGUN_OFFSET = 20
 const SHOTGUN_CENTER_OFFSET = Vector2(0, -12)
+#const SHOTGUN_POSITION_RIGHT = Vector2(-2, -17)
 
 #controls logs indicating what state the player is in
 const STATE_DEBUG = false
@@ -30,11 +31,13 @@ var max_grapple_charges = 3
 var grapple_charges = max_grapple_charges
 var interactable = null
 
-onready var Player = $PlayerSprite
+onready var player = $PlayerSprite
 onready var animationPlayer = $AnimationPlayer
+onready var animationTree = $AnimationTree
+onready var animationState = animationTree.get("parameters/playback")
 onready var grapplingHook = $GrappleHook
-onready var ShotgunPosition = $ShotgunPosition
-onready var Shotgun = $ShotgunPosition/Shotgun
+onready var ShotgunPosition = $PlayerSprite/ShotgunPosition
+onready var Shotgun = $PlayerSprite/ShotgunPosition/Shotgun
 
 signal player_interacted(area)
 signal interacted_with_shrine(isCurseShrine)
@@ -43,9 +46,9 @@ func _ready():
     grapplingHook.connect("grappling_released", self, "_on_grappling_released")
     SignalBus.add_listener("curse_purchased", self, "_on_curse_purchased")
     SignalBus.add_emitter("interacted_with_shrine", self)
+    animationTree.active = true
    
 func _process(delta):
-    update()
     #MOVEMENT
     match state:
         GROUND:
@@ -63,6 +66,7 @@ func _process(delta):
             
     if Input.is_action_just_pressed("jump") and state == GROUND:
         velocity.y = JUMP_VELOCITY
+        animationState.travel("Jump")
         state = JUMP
         
     if Input.is_action_just_pressed("grapple") and grapple_charges >= 1:
@@ -77,6 +81,10 @@ func _process(delta):
         state = JUMP    
                 
     velocity = move_and_slide(velocity, UP)
+    if velocity. x > 0:
+        player.set_scale(Vector2(1, 1))
+    elif velocity.x < 0:
+        player.set_scale(Vector2(-1, 1))
     
     #WEAPONS
     aim_shotgun()
@@ -112,8 +120,13 @@ func move_ground(delta):
         velocity.x = 0
         velocity = velocity.move_toward(velocity, FRICTION * delta)
     
-func move_jump(delta):
+    #Animation
+    if velocity.x == 0:
+        animationState.travel("Idle")
+    else:
+        animationState.travel("Walk")
     
+func move_jump(delta):
     var input_vector = Vector2.ZERO
     input_vector.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
     input_vector = input_vector.normalized()
@@ -123,6 +136,9 @@ func move_jump(delta):
     if is_on_floor() and velocity.y >= 0:
         grapple_charges = max_grapple_charges
         state = GROUND
+    play_in_air_animations()
+        
+
 
 func move_grapple(delta):
     var input_vector = Vector2.ZERO
@@ -134,6 +150,14 @@ func move_grapple(delta):
     if sign(input_vector.x) != sign(hook_velocity.x):
         hook_velocity.x *= 0.7
     velocity += hook_velocity
+    play_in_air_animations()
+    
+func play_in_air_animations():
+    #Animation
+    if velocity.y < 0:
+        animationState.travel("Jump")
+    else:
+        animationState.travel("Fall")
     
 #WEAPONS
 
@@ -141,12 +165,6 @@ func aim_shotgun():
     #Aiming
     var cursor_position = get_local_mouse_position().normalized() * SHOTGUN_OFFSET
     var look_at_position = get_local_mouse_position().normalized() * SHOTGUN_OFFSET * 10
-    #Make sure the shotgun sprite is always in the right orientation
-    if cursor_position.x > 0:
-        ShotgunPosition.set_scale(Vector2(1, 1))
-    else:
-        ShotgunPosition.set_scale(Vector2(1, -1))
-    ShotgunPosition.position = cursor_position + SHOTGUN_CENTER_OFFSET
     
     ShotgunPosition.look_at(to_global(look_at_position))
 
