@@ -7,6 +7,7 @@ const HIT_DELAY = 0.016666 * 3
 const KNOCKBACK_PERIOD = 0.3
 
 onready var minionSprite = $Sprite
+onready var minionDeathSprite = $DeathSprite
 onready var animationPlayer = $AnimationPlayer
 onready var animationTree = $AnimationTree
 onready var animationState = animationTree.get("parameters/playback")
@@ -37,6 +38,7 @@ func _ready():
     timer.wait_time = HIT_DELAY
     knockbackPeriod.connect("timeout", self, "_on_KnockbackPeriod_timeout")
     knockbackPeriod.wait_time = KNOCKBACK_PERIOD
+    minionDeathSprite.visible = false
     
     animationTree.active = true
         
@@ -73,7 +75,10 @@ func take_damage(damage_to_receive, knockback):
     
 func _on_Timer_timeout():
     if current_health <= 0:
-        queue_free()
+        minionSprite.visible = false
+        minionDeathSprite.visible = true
+        animationState.travel("Death")
+        #queue_free()
     timer.stop()
     state = KNOCKBACK
     knockbackPeriod.start()
