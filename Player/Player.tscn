@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=27 format=2]
 
 [ext_resource path="res://Player.gd" type="Script" id=1]
 [ext_resource path="res://Systems/InteractHitbox.tscn" type="PackedScene" id=3]
@@ -13,6 +13,143 @@ height = 4.0
 [sub_resource type="RectangleShape2D" id=3]
 extents = Vector2( 12.0001, 20.5 )
 
+[sub_resource type="Animation" id=7]
+resource_name = "Fall"
+length = 0.35
+tracks/0/type = "value"
+tracks/0/path = NodePath("PlayerSprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 63, 72 ]
+}
+
+[sub_resource type="Animation" id=4]
+resource_name = "Idle"
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("PlayerSprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5, 0.9 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 1,
+"values": [ 97, 98, 97 ]
+}
+
+[sub_resource type="Animation" id=8]
+resource_name = "Jump"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("PlayerSprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 54 ]
+}
+
+[sub_resource type="Animation" id=9]
+resource_name = "Land"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("PlayerSprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 72 ]
+}
+
+[sub_resource type="Animation" id=5]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("PlayerSprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray(  ),
+"transitions": PoolRealArray(  ),
+"update": 0,
+"values": [  ]
+}
+
+[sub_resource type="Animation" id=6]
+resource_name = "Walk"
+length = 0.85
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("PlayerSprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 16, 9, 10, 11, 12, 13, 14, 15, 16 ]
+}
+
+[sub_resource type="AnimationNodeAnimation" id=10]
+animation = "Fall"
+
+[sub_resource type="AnimationNodeAnimation" id=11]
+animation = "Idle"
+
+[sub_resource type="AnimationNodeAnimation" id=12]
+animation = "Jump"
+
+[sub_resource type="AnimationNodeAnimation" id=14]
+animation = "Walk"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=15]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=16]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=17]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=18]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=21]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=24]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=25]
+
+[sub_resource type="AnimationNodeStateMachine" id=22]
+states/Fall/node = SubResource( 10 )
+states/Fall/position = Vector2( 672, 136 )
+states/Idle/node = SubResource( 11 )
+states/Idle/position = Vector2( 292, 54 )
+states/Jump/node = SubResource( 12 )
+states/Jump/position = Vector2( 665, 54 )
+states/Walk/node = SubResource( 14 )
+states/Walk/position = Vector2( 477, 136 )
+transitions = [ "Idle", "Walk", SubResource( 15 ), "Walk", "Idle", SubResource( 16 ), "Walk", "Jump", SubResource( 17 ), "Jump", "Fall", SubResource( 18 ), "Walk", "Fall", SubResource( 21 ), "Idle", "Jump", SubResource( 24 ), "Fall", "Walk", SubResource( 25 ) ]
+start_node = "Idle"
+graph_offset = Vector2( -29, -37 )
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=23]
+
 [node name="Player" type="KinematicBody2D"]
 collision_layer = 2
 script = ExtResource( 1 )
@@ -20,44 +157,62 @@ __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Gunslinger" type="Sprite" parent="."]
-position = Vector2( -2, -20 )
+[node name="PlayerSprite" type="Sprite" parent="."]
+position = Vector2( 0, -24 )
 texture = ExtResource( 6 )
 hframes = 9
 vframes = 13
-frame = 36
+frame = 97
 
-[node name="PlayerCollision" type="CollisionShape2D" parent="."]
-position = Vector2( -2, 0 )
-rotation = 1.5708
-shape = SubResource( 2 )
+[node name="ShotgunPosition" type="Node2D" parent="PlayerSprite"]
+position = Vector2( -2, 7 )
+__meta__ = {
+"_edit_group_": true
+}
 
-[node name="InteractHitbox" parent="." instance=ExtResource( 3 )]
-position = Vector2( 0, -3.5 )
-rotation = 1.5708
-
-[node name="CollisionShape2D" parent="InteractHitbox" index="0"]
-position = Vector2( -8.50006, -10.4999 )
-shape = SubResource( 3 )
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+[node name="Shotgun" parent="PlayerSprite/ShotgunPosition" instance=ExtResource( 5 )]
+z_index = 1
 
 [node name="GrappleHook" parent="." instance=ExtResource( 4 )]
+visible = false
 position = Vector2( 0, -16 )
 scale = Vector2( 0.3, 0.3 )
 z_index = -1
 
+[node name="PlayerCollision" type="CollisionShape2D" parent="."]
+visible = false
+position = Vector2( 0, -4 )
+rotation = 1.5708
+shape = SubResource( 2 )
+
+[node name="InteractHitbox" parent="." instance=ExtResource( 3 )]
+visible = false
+position = Vector2( 0, -3.5 )
+rotation = 1.5708
+
+[node name="CollisionShape2D" parent="InteractHitbox" index="0"]
+visible = false
+position = Vector2( -8.50006, -10.4999 )
+shape = SubResource( 3 )
+
 [node name="Camera2D" type="Camera2D" parent="."]
+visible = false
 current = true
 zoom = Vector2( 0.3, 0.3 )
 smoothing_enabled = true
 
-[node name="ShotgunPosition" type="Node2D" parent="."]
-position = Vector2( -5, -12 )
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/Fall = SubResource( 7 )
+anims/Idle = SubResource( 4 )
+anims/Jump = SubResource( 8 )
+anims/Land = SubResource( 9 )
+anims/RESET = SubResource( 5 )
+anims/Walk = SubResource( 6 )
 
-[node name="Shotgun" parent="ShotgunPosition" instance=ExtResource( 5 )]
-position = Vector2( 1, 0 )
-z_index = 1
+[node name="AnimationTree" type="AnimationTree" parent="."]
+tree_root = SubResource( 22 )
+anim_player = NodePath("../AnimationPlayer")
+parameters/playback = SubResource( 23 )
 
 [connection signal="area_entered" from="InteractHitbox" to="." method="_on_InteractHitbox_area_entered"]
 [connection signal="area_exited" from="InteractHitbox" to="." method="_on_InteractHitbox_area_exited"]
