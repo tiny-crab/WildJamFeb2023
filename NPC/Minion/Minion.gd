@@ -1,11 +1,16 @@
 extends KinematicBody2D
 
-const MOVE_SPEED = 100
+const MOVE_SPEED = 20
 const GRAVITY = 600.0
 #5 frames of hit delay
 const HIT_DELAY = 0.016666 * 3
 const KNOCKBACK_PERIOD = 0.3
 
+onready var minionSprite = $Sprite
+onready var minionDeathSprite = $DeathSprite
+onready var animationPlayer = $AnimationPlayer
+onready var animationTree = $AnimationTree
+onready var animationState = animationTree.get("parameters/playback")
 onready var ledgeCheckRight = $LedgeCheckRight
 onready var ledgeCheckLeft = $LedgeCheckLeft
 onready var timer = $HitDelay
@@ -33,10 +38,14 @@ func _ready():
     timer.wait_time = HIT_DELAY
     knockbackPeriod.connect("timeout", self, "_on_KnockbackPeriod_timeout")
     knockbackPeriod.wait_time = KNOCKBACK_PERIOD
+    minionDeathSprite.visible = false
+    
+    animationTree.active = true
         
 func _physics_process(delta):
     match state:
         NORMAL:
+            #animationState.travel("Walk")
             minion_movement(delta)
             move_and_slide(velocity, Vector2.UP)
         HIT:
@@ -49,6 +58,7 @@ func minion_movement(delta):
     var found_ledge = not ledgeCheckRight.is_colliding() or not ledgeCheckLeft.is_colliding()
     if found_wall or found_ledge:
         direction.x *= -1
+        scale.x *= -1
         
     if not is_on_floor():
         velocity.y += delta * GRAVITY
@@ -65,7 +75,10 @@ func take_damage(damage_to_receive, knockback):
     
 func _on_Timer_timeout():
     if current_health <= 0:
-        queue_free()
+        minionSprite.visible = false
+        minionDeathSprite.visible = true
+        animationState.travel("Death")
+        #queue_free()
     timer.stop()
     state = KNOCKBACK
     knockbackPeriod.start()

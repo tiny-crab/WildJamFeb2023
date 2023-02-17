@@ -12,6 +12,7 @@ const JUMP_VELOCITY = -200
 const CHAIN_PULL = 105
 const SHOTGUN_OFFSET = 20
 const SHOTGUN_CENTER_OFFSET = Vector2(0, -12)
+const INTIAL_HEALTH = 100
 #const SHOTGUN_POSITION_RIGHT = Vector2(-2, -17)
 
 #controls logs indicating what state the player is in
@@ -30,6 +31,9 @@ var hook_velocity = Vector2.ZERO
 var max_grapple_charges = 3
 var grapple_charges = max_grapple_charges
 var interactable = null
+
+var damage_received_modifier = 1
+var current_health = INTIAL_HEALTH
 
 onready var player = $PlayerSprite
 onready var animationPlayer = $AnimationPlayer
@@ -145,8 +149,6 @@ func move_jump(delta):
         state = GROUND
     play_in_air_animations()
         
-
-
 func move_grapple(delta):
     var input_vector = Vector2.ZERO
     input_vector.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
@@ -175,6 +177,10 @@ func aim_shotgun():
     
     ShotgunPosition.look_at(to_global(look_at_position))
 
+
+#Damage
+func receive_damage(damage_to_receive):
+    current_health -= damage_to_receive * damage_received_modifier
 
 # INTERACTIONS
 
