@@ -1,32 +1,73 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=9 format=2]
 
-[ext_resource path="res://Temp Assets/FarmAssets/SUNNYSIDE_WORLD_GOBLIN_V0.1/PNG/spr_idle_strip9.png" type="Texture" id=1]
+[ext_resource path="res://Assets/Sprites/Blinding Spider/walk 16x16.png" type="Texture" id=1]
 [ext_resource path="res://NPC/Minion/Minion.gd" type="Script" id=2]
 
+[sub_resource type="Animation" id=2]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 1 ]
+}
+
+[sub_resource type="Animation" id=3]
+resource_name = "Walk"
+length = 0.6
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2, 0.3, 0.4, 0.5 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 0, 1, 2, 3, 4, 5 ]
+}
+
+[sub_resource type="AnimationNodeAnimation" id=6]
+animation = "Walk"
+
+[sub_resource type="AnimationNodeStateMachine" id=4]
+states/Walk/node = SubResource( 6 )
+states/Walk/position = Vector2( 327, 76 )
+start_node = "Walk"
+graph_offset = Vector2( -1, -23 )
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=5]
+
 [sub_resource type="CapsuleShape2D" id=1]
-radius = 6.0
-height = 4.0
+radius = 3.0
+height = 0.0
 
 [node name="Minion" type="KinematicBody2D"]
 collision_layer = 5
 script = ExtResource( 2 )
 
 [node name="Sprite" type="Sprite" parent="."]
+position = Vector2( 5, -5 )
 texture = ExtResource( 1 )
-hframes = 8
+vframes = 6
+frame = 1
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( 0, -1 )
-shape = SubResource( 1 )
-
-[node name="LedgeCheckRight" type="RayCast2D" parent="."]
-position = Vector2( 4, 6 )
+[node name="LedgeCheckLeft" type="RayCast2D" parent="."]
+position = Vector2( -3, 3 )
 enabled = true
 cast_to = Vector2( 0, 4 )
 collide_with_areas = true
 
-[node name="LedgeCheckLeft" type="RayCast2D" parent="."]
-position = Vector2( -3, 6 )
+[node name="LedgeCheckRight" type="RayCast2D" parent="."]
+position = Vector2( 4, 3 )
 enabled = true
 cast_to = Vector2( 0, 4 )
 collide_with_areas = true
@@ -36,3 +77,15 @@ wait_time = 0.083
 
 [node name="KnockbackPeriod" type="Timer" parent="."]
 wait_time = 0.083
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/RESET = SubResource( 2 )
+anims/Walk = SubResource( 3 )
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+tree_root = SubResource( 4 )
+anim_player = NodePath("../AnimationPlayer")
+parameters/playback = SubResource( 5 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource( 1 )
