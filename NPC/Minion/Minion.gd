@@ -25,6 +25,9 @@ var velocity = Vector2.ZERO
 var max_health = 100
 var current_health = max_health
 
+func get_class():
+    return "Minion"
+
 func _ready():
     timer.connect("timeout", self, "_on_Timer_timeout")
     timer.wait_time = HIT_DELAY
