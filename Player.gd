@@ -41,11 +41,13 @@ onready var Shotgun = $PlayerSprite/ShotgunPosition/Shotgun
 
 signal player_interacted(area)
 signal interacted_with_shrine(isCurseShrine)
+signal interacted_with_key(keyNode)
 
 func _ready():
     grapplingHook.connect("grappling_released", self, "_on_grappling_released")
     SignalBus.add_listener("curse_purchased", self, "_on_curse_purchased")
     SignalBus.add_emitter("interacted_with_shrine", self)
+    SignalBus.add_emitter("interacted_with_key", self)
     animationTree.active = true
    
 func _process(delta):
@@ -182,10 +184,9 @@ func _on_InteractHitbox_area_exited(area):
 
 func _on_Interacted_with_Shrine(node):
     emit_signal("interacted_with_shrine", node.isCurseShrine)
-    pass
 
 func _on_Interacted_with_Key(node):
-    pass
+    emit_signal("interacted_with_key", node)
 
 # CURSES
 
