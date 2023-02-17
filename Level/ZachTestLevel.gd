@@ -6,4 +6,3 @@ func _ready():
         load("res://Resources/JumpHeightCurse.tres"),
         load("res://Resources/MoveSpeedCurse.tres")
     ]
-    

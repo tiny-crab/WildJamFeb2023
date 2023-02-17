@@ -1,24 +1,19 @@
 extends Node2D
 
-onready var lockWest = get_node("LockWest")
-onready var lockEast = get_node("LockEast")
-onready var lockSouth = get_node("LockSouth")
-
 var keysPickedUp = 0
 
 func _ready():
-    SignalBus.add_listener("key_pickup", self, "_on_Key_pickup")
+    SignalBus.add_listener("interacted_with_key", self, "_on_Key_pickup")
 
 func _on_Key_pickup(node):
-    print("%s was picked up" % node.name)
     keysPickedUp += 1
     if (keysPickedUp == 1):
         print("keyWest complete")
-        lockWest.show()
+        $LockWest.show()
     if (keysPickedUp == 2):
         print("keyEast complete")
-        lockEast.show()
+        $LockEast.show()
     if (keysPickedUp == 3):
         print("keySouth complete")
-        lockSouth.show()
+        $LockSouth.show()
     

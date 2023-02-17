@@ -7,15 +7,11 @@ onready var notification = get_node("InteractNotification")
 func get_class():
     return "Key"
 
-func _ready():
-    var player = get_parent().get_node("Player")
-    player.connect("player_interacted", self, "_on_Player_interacted")
+func _ready():    
+    SignalBus.add_listener("interacted_with_key", self, "_on_Interacted_with_key")
     
-    SignalBus.add_emitter("key_pickup", self)
-    
-func _on_Player_interacted(node):
+func _on_Interacted_with_key(node):
     if (node.name == name):
-        emit_signal("key_pickup", self)
         queue_free()
 
 func _on_InteractHurtbox_area_entered(area):
