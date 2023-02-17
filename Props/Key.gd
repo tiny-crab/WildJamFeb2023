@@ -1,6 +1,6 @@
 extends Node2D
 
-signal key_pickup(node)
+signal key_pickup
 
 onready var notification = get_node("InteractNotification")
 
@@ -12,6 +12,7 @@ func _ready():
     
 func _on_Interacted_with_key(node):
     if (node.name == name):
+        emit_signal("key_pickup")
         queue_free()
 
 func _on_InteractHurtbox_area_entered(area):

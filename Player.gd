@@ -194,7 +194,8 @@ func _on_InteractHitbox_area_exited(area):
         interactable = null
 
 func _on_Interacted_with_Shrine(node):
-    emit_signal("interacted_with_shrine", node.isCurseShrine)
+    if (!node.destroyed):
+        emit_signal("interacted_with_shrine", node.isCurseShrine)
 
 func _on_Interacted_with_Key(node):
     emit_signal("interacted_with_key", node)
