@@ -42,12 +42,14 @@ onready var Shotgun = $PlayerSprite/ShotgunPosition/Shotgun
 signal player_interacted(area)
 signal interacted_with_shrine(isCurseShrine)
 signal interacted_with_key(keyNode)
+signal activated_teleporter()
 
 func _ready():
     grapplingHook.connect("grappling_released", self, "_on_grappling_released")
     SignalBus.add_listener("curse_purchased", self, "_on_curse_purchased")
     SignalBus.add_emitter("interacted_with_shrine", self)
     SignalBus.add_emitter("interacted_with_key", self)
+    SignalBus.add_emitter("activated_teleporter", self)
     animationTree.active = true
    
 func _process(delta):
@@ -103,6 +105,9 @@ func _process(delta):
             _on_Interacted_with_Key(interactable)
         else:
             push_warning("Attempted to interact with an Interactable without a class")
+    
+    if Input.is_action_just_pressed("reset"):
+        emit_signal("activated_teleporter")
            
 func _on_grappling_released():
     print("grappling released")
