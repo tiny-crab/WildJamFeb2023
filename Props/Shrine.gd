@@ -8,12 +8,12 @@ var destroyed = false
 
 var curseTutorialText = [
     "The cursed, blood red sap running from this tree bark withers and shrivels your skin on contact.",
-    "Taking sap will weaken you in different ways, but you can use the sap to gain power from sacred trees.",
+    "Gathering sap will weaken you in different ways, but you can use the sap to gain power at sacred trees.",
     "Once you gather sap from this tree, it will be destroyed.",
    ]
 var boonTutorialText = [
     "The soothing, moss-green sap running from this tree bark cools and heals your skin on contact.",
-    "You can use your cursed tree sap to gain power from these sacred trees.",
+    "Gather sap from cursed trees to gain power here.",
     "Once you deposit sap in this tree, it will be destroyed.",
    ]
 
