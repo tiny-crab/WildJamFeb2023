@@ -4,7 +4,7 @@ const INITIAL_HEALTH = 300
 const INTIAL_CHARGE_INCREMENT_TIME = 0.1
 const INITIAL_SCALE = Vector2(0.1, 0.1)
 const SCALE_INCREMENT = Vector2(0.01, 0.01)
-const INITIAL_DAMAGE_DEALT = 1
+const INITIAL_DAMAGE_DEALT = 5
 const INTIAL_POWER = 1
 const MAX_POWER = 100
 const MIN_PURSUIT_TIME = 1
@@ -111,15 +111,17 @@ func wide_attack():
     animationState.travel("WideAttack")
           
 func take_damage(damage_to_receive, knockback):
+    print("taking damage")
     if state != CHARGING:
         current_health -= damage_to_receive
-        if current_health <= 0:
+        if current_health <= 0 and state != DEAD:
             state = DEAD
             animationState.travel("Death")
             
 func power_up():
     scale += SCALE_INCREMENT * scale_increment_modifier
     power += 1
+    attack_damage += 0.5
     if power >= MAX_POWER:
         chargeUpTimer.stop()
         teleport()

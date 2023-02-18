@@ -24,7 +24,7 @@ func shoot():
     if raycast.is_colliding():
         var hit_object = raycast.get_collider()
         #TODO make list of hittable scenes and tack that way if we have more than one enemey type
-        if hit_object.get_class() == "Minion":
+        if hit_object.get_class() == "Minion" or hit_object.get_class() == "Boss":
             var knockback_direction = raycast.get_collision_normal()
             knockback_direction.x *= -1
             hit_object.take_damage(20, knockback_direction * knockback_force)
