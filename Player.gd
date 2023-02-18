@@ -227,4 +227,5 @@ func _on_Hurtbox_area_entered(area):
     var bodies = area.get_overlapping_bodies()
     for body in bodies:
         if body.get_class() == "Minion" or body.get_class() == "Boss":
+            print(body.attack_damage)
             receive_damage(body.attack_damage)

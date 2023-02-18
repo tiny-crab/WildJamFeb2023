@@ -106,6 +106,7 @@ height = 0.0
 extents = Vector2( 4.5, 4 )
 
 [node name="Minion" type="KinematicBody2D"]
+scale = Vector2( 1.5, 1.5 )
 collision_layer = 5
 script = ExtResource( 2 )
 
@@ -123,13 +124,13 @@ vframes = 6
 frame = 1
 
 [node name="LedgeCheckLeft" type="RayCast2D" parent="."]
-position = Vector2( -3, 3 )
+position = Vector2( -2.66667, 2.66667 )
 enabled = true
 cast_to = Vector2( 0, 4 )
 collide_with_areas = true
 
 [node name="LedgeCheckRight" type="RayCast2D" parent="."]
-position = Vector2( 4, 3 )
+position = Vector2( 5.33333, 2.66667 )
 enabled = true
 cast_to = Vector2( 0, 4 )
 

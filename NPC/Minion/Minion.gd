@@ -1,6 +1,6 @@
 extends KinematicBody2D
 
-const MOVE_SPEED = 20
+const MOVE_SPEED = 40
 const GRAVITY = 600.0
 #5 frames of hit delay
 const HIT_DELAY = 0.016666 * 3
