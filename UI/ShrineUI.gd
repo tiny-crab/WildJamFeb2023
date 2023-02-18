@@ -1,16 +1,6 @@
 extends Control
 
-onready var curses = [
-        preload("res://Resources/FallDamageCurse.tres"),
-        preload("res://Resources/JumpHeightCurse.tres"),
-        preload("res://Resources/MoveSpeedCurse.tres")
-    ]
-onready var boons = [
-        preload("res://Resources/DoubleJumpBoon.tres"),
-        preload("res://Resources/JumpHeightBoon.tres"),
-        preload("res://Resources/MoveSpeedBoon.tres")
-    ]
-    
+var activatedShrine: Shrine = null
 var displayedCurse: Curse = null
 var curseOptions = []
 var selectedCurses = []
@@ -27,9 +17,10 @@ func _ready():
         var selectionUI = curseSelectionUIs[i]
         selectionUI.connect("toggled", self, "_curse_toggled", [i])
     
-func _on_Interacted_with_shrine(isCurseShrine: bool):
-    curseOptions = curses if isCurseShrine else boons
-    isCurseUI = isCurseShrine
+func _on_Interacted_with_shrine(shrine: Shrine):
+    activatedShrine = shrine
+    curseOptions = shrine.selections
+    isCurseUI = shrine.isCurseShrine
 
     for i in range(3):
         var selectionUI = curseSelectionUIs[i]
@@ -76,5 +67,6 @@ func _on_CloseButton_pressed():
 func _on_BuyButton_pressed():
     displayedCurse = null
     selectedCurses = []
+    activatedShrine.destroy()
     emit_signal("curse_purchased", selectedCurses)
     hide()

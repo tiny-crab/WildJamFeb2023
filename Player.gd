@@ -45,7 +45,7 @@ onready var ShotgunPosition = $PlayerSprite/ShotgunPosition
 onready var Shotgun = $PlayerSprite/ShotgunPosition/Shotgun
 
 signal player_interacted(area)
-signal interacted_with_shrine(isCurseShrine)
+signal interacted_with_shrine(shrineNode)
 signal interacted_with_key(keyNode)
 signal activated_teleporter()
 signal send_player_position(player_position)
@@ -209,7 +209,7 @@ func _on_InteractHitbox_area_exited(area):
 
 func _on_Interacted_with_Shrine(node):
     if (!node.destroyed):
-        emit_signal("interacted_with_shrine", node.isCurseShrine)
+        emit_signal("interacted_with_shrine", node)
 
 func _on_Interacted_with_Key(node):
     emit_signal("interacted_with_key", node)
