@@ -56,14 +56,14 @@ func refresh_selected_curses():
     for curse in selectedCurses:
         sum += curse.value
 
-    var verb = "gain" if isCurseUI else "spend"
+    var verb = "gather" if isCurseUI else "deposit"
     var noun = "curse" if isCurseUI else "boon"
     var descriptor = "bonus" if isCurseUI else "extra"
-    var lastSelectedCurseText = "You would {0} {1} coin(s)".format([verb, sum])
+    var lastSelectedCurseText = "You would {0} {1} sap".format([verb, sum])
     if selectedCurses.size() == 1:
         $CurseValue.text = lastSelectedCurseText
     elif selectedCurses.size() > 1:
-        var bonusText = " + {0} {1} coins for each {2} taken at once".format([(selectedCurses.size()-1), descriptor, noun])
+        var bonusText = " + {0} {1} sap for each {2} taken at once".format([(selectedCurses.size()-1), descriptor, noun])
         $CurseValue.text = lastSelectedCurseText + bonusText
     else:
         $CurseValue.text = ""

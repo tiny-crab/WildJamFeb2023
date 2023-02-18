@@ -1,8 +1,13 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Props/BossDoor.gd" type="Script" id=1]
 [ext_resource path="res://Temp Assets/PixelFantasy_Caves_1.0/props1.png" type="Texture" id=2]
 [ext_resource path="res://Temp Assets/Bit-Bonanza-10x10/no-background/Misc-no-bg.png" type="Texture" id=3]
+[ext_resource path="res://Systems/InteractHurtbox.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Temp Assets/1-bit-input-prompts-pixel-16/Tilemap/tilemap_white.png" type="Texture" id=5]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 72, 73.5 )
 
 [node name="BossDoor" type="Node2D"]
 script = ExtResource( 1 )
@@ -36,3 +41,20 @@ scale = Vector2( 2, 2 )
 texture = ExtResource( 3 )
 region_enabled = true
 region_rect = Rect2( 0, 200, 10, 10 )
+
+[node name="InteractHurtbox" parent="." instance=ExtResource( 4 )]
+
+[node name="CollisionShape2D" parent="InteractHurtbox" index="0"]
+shape = SubResource( 1 )
+
+[node name="InteractNotification" type="Sprite" parent="."]
+visible = false
+position = Vector2( 0, -112 )
+texture = ExtResource( 5 )
+region_enabled = true
+region_rect = Rect2( 325, 172, 11, 11 )
+
+[connection signal="area_entered" from="InteractHurtbox" to="." method="_on_InteractHurtbox_area_entered"]
+[connection signal="area_exited" from="InteractHurtbox" to="." method="_on_InteractHurtbox_area_exited"]
+
+[editable path="InteractHurtbox"]
