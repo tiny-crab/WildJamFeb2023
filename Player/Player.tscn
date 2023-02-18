@@ -1,10 +1,14 @@
-[gd_scene load_steps=27 format=2]
+[gd_scene load_steps=34 format=2]
 
 [ext_resource path="res://Player.gd" type="Script" id=1]
+[ext_resource path="res://Hitboxes And Hurtboxes/Hurtbox.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Systems/InteractHitbox.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Player/Grappling Hook/GrappleHook.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Player/Weapons/Shotgun.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Assets/19 - DARK - Gunslinger/Gunslinger/Gunslinger 48x48 Sprite Sheet no weapons for sprite stacking.png" type="Texture" id=6]
+
+[sub_resource type="RectangleShape2D" id=26]
+extents = Vector2( 3.5, 12.5 )
 
 [sub_resource type="CapsuleShape2D" id=2]
 radius = 4.0
@@ -12,6 +16,22 @@ height = 4.0
 
 [sub_resource type="RectangleShape2D" id=3]
 extents = Vector2( 12.0001, 20.5 )
+
+[sub_resource type="Animation" id=27]
+resource_name = "Death"
+length = 0.6
+tracks/0/type = "value"
+tracks/0/path = NodePath("PlayerSprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2, 0.3, 0.4, 0.5 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 90, 91, 108, 109, 110, 111 ]
+}
 
 [sub_resource type="Animation" id=7]
 resource_name = "Fall"
@@ -109,6 +129,9 @@ tracks/0/keys = {
 "values": [ 16, 9, 10, 11, 12, 13, 14, 15, 16 ]
 }
 
+[sub_resource type="AnimationNodeAnimation" id=28]
+animation = "Death"
+
 [sub_resource type="AnimationNodeAnimation" id=10]
 animation = "Fall"
 
@@ -135,7 +158,15 @@ animation = "Walk"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=25]
 
+[sub_resource type="AnimationNodeStateMachineTransition" id=29]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=30]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=33]
+
 [sub_resource type="AnimationNodeStateMachine" id=22]
+states/Death/node = SubResource( 28 )
+states/Death/position = Vector2( 292, 235 )
 states/Fall/node = SubResource( 10 )
 states/Fall/position = Vector2( 672, 136 )
 states/Idle/node = SubResource( 11 )
@@ -144,9 +175,9 @@ states/Jump/node = SubResource( 12 )
 states/Jump/position = Vector2( 665, 54 )
 states/Walk/node = SubResource( 14 )
 states/Walk/position = Vector2( 477, 136 )
-transitions = [ "Idle", "Walk", SubResource( 15 ), "Walk", "Idle", SubResource( 16 ), "Walk", "Jump", SubResource( 17 ), "Jump", "Fall", SubResource( 18 ), "Walk", "Fall", SubResource( 21 ), "Idle", "Jump", SubResource( 24 ), "Fall", "Walk", SubResource( 25 ) ]
+transitions = [ "Idle", "Walk", SubResource( 15 ), "Walk", "Idle", SubResource( 16 ), "Walk", "Jump", SubResource( 17 ), "Jump", "Fall", SubResource( 18 ), "Walk", "Fall", SubResource( 21 ), "Idle", "Jump", SubResource( 24 ), "Fall", "Walk", SubResource( 25 ), "Idle", "Death", SubResource( 29 ), "Walk", "Death", SubResource( 30 ), "Fall", "Death", SubResource( 33 ) ]
 start_node = "Idle"
-graph_offset = Vector2( -29, -37 )
+graph_offset = Vector2( 19, 3 )
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=23]
 
@@ -162,7 +193,7 @@ position = Vector2( 0, -24 )
 texture = ExtResource( 6 )
 hframes = 9
 vframes = 13
-frame = 97
+frame = 98
 
 [node name="ShotgunPosition" type="Node2D" parent="PlayerSprite"]
 position = Vector2( -2, 7 )
@@ -173,25 +204,28 @@ __meta__ = {
 [node name="Shotgun" parent="PlayerSprite/ShotgunPosition" instance=ExtResource( 5 )]
 z_index = 1
 
+[node name="Hurtbox" parent="PlayerSprite" instance=ExtResource( 2 )]
+position = Vector2( 0, 24 )
+
+[node name="CollisionShape2D" parent="PlayerSprite/Hurtbox" index="0"]
+position = Vector2( 0, -13 )
+shape = SubResource( 26 )
+
 [node name="GrappleHook" parent="." instance=ExtResource( 4 )]
-visible = false
 position = Vector2( 0, -16 )
 scale = Vector2( 0.3, 0.3 )
 z_index = -1
 
 [node name="PlayerCollision" type="CollisionShape2D" parent="."]
-visible = false
 position = Vector2( 0, -4 )
 rotation = 1.5708
 shape = SubResource( 2 )
 
 [node name="InteractHitbox" parent="." instance=ExtResource( 3 )]
-visible = false
 position = Vector2( 0, -3.5 )
 rotation = 1.5708
 
 [node name="CollisionShape2D" parent="InteractHitbox" index="0"]
-visible = false
 position = Vector2( -8.50006, -10.4999 )
 shape = SubResource( 3 )
 
@@ -202,6 +236,7 @@ zoom = Vector2( 0.5, 0.5 )
 smoothing_enabled = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/Death = SubResource( 27 )
 anims/Fall = SubResource( 7 )
 anims/Idle = SubResource( 4 )
 anims/Jump = SubResource( 8 )
@@ -212,9 +247,12 @@ anims/Walk = SubResource( 6 )
 [node name="AnimationTree" type="AnimationTree" parent="."]
 tree_root = SubResource( 22 )
 anim_player = NodePath("../AnimationPlayer")
+active = true
 parameters/playback = SubResource( 23 )
 
+[connection signal="area_entered" from="PlayerSprite/Hurtbox" to="." method="_on_Hurtbox_area_entered"]
 [connection signal="area_entered" from="InteractHitbox" to="." method="_on_InteractHitbox_area_entered"]
 [connection signal="area_exited" from="InteractHitbox" to="." method="_on_InteractHitbox_area_exited"]
 
+[editable path="PlayerSprite/Hurtbox"]
 [editable path="InteractHitbox"]
