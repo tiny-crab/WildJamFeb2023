@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://UI/Options.gd" type="Script" id=1]
+
+[node name="Options" type="VBoxContainer"]
+anchor_bottom = 1.0
+margin_right = 134.0
+script = ExtResource( 1 )
+
+[node name="VolumeLabel" type="Label" parent="."]
+margin_right = 134.0
+margin_bottom = 14.0
+text = "Volume"
+
+[node name="VolumeSlider" type="HSlider" parent="."]
+margin_top = 18.0
+margin_right = 134.0
+margin_bottom = 34.0
+
+[node name="Save" type="Button" parent="."]
+margin_top = 38.0
+margin_right = 134.0
+margin_bottom = 58.0
+text = "Save + Close"
+
+[connection signal="value_changed" from="VolumeSlider" to="." method="_on_VolumeSlider_value_changed"]
+[connection signal="pressed" from="Save" to="." method="_on_Save_pressed"]

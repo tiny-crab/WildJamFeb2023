@@ -47,6 +47,7 @@ signal player_interacted(area)
 signal interacted_with_shrine(isCurseShrine)
 signal interacted_with_key(keyNode)
 signal activated_teleporter()
+signal paused_game()
 
 func _ready():
     grapplingHook.connect("grappling_released", self, "_on_grappling_released")
@@ -54,6 +55,7 @@ func _ready():
     SignalBus.add_emitter("interacted_with_shrine", self)
     SignalBus.add_emitter("interacted_with_key", self)
     SignalBus.add_emitter("activated_teleporter", self)
+    SignalBus.add_emitter("paused_game", self)
     animationTree.active = true
    
 func _process(delta):
@@ -112,6 +114,9 @@ func _process(delta):
     
     if Input.is_action_just_pressed("reset"):
         emit_signal("activated_teleporter")
+        
+    if Input.is_action_just_pressed("pause"):
+        emit_signal("paused_game")
            
 func _on_grappling_released():
     print("grappling released")
