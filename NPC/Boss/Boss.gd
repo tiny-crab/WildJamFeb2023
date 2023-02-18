@@ -1,7 +1,7 @@
 extends KinematicBody2D
 
 const INITIAL_HEALTH = 300
-const INTIAL_CHARGE_INCREMENT_TIME = 1
+const INTIAL_CHARGE_INCREMENT_TIME = 0.1
 const INITIAL_SCALE = Vector2(0.1, 0.1)
 const SCALE_INCREMENT = Vector2(0.01, 0.01)
 const INITIAL_DAMAGE_DEALT = 1
@@ -9,12 +9,13 @@ const INTIAL_POWER = 1
 const MAX_POWER = 100
 const MIN_PURSUIT_TIME = 1
 const MAX_PURSUIT_TIME = 3
-const PURSUIT_SPEED = 20
+const PURSUIT_SPEED = 5
 
 onready var teleportPositionOne = to_global($TeleportPosition1.position)
 onready var teleportPositionTwo = to_global($TeleportPosition2.position)
 onready var teleportPositionThree = to_global($TeleportPosition3.position)
 
+onready var sprite = $FloorSprite
 onready var animationPlayer = $AnimationPlayer
 onready var animationTree = $AnimationTree
 onready var animationState = animationTree.get("parameters/playback")
@@ -60,6 +61,7 @@ func _ready():
         chargeUpTimer.start()
         
 func _process(delta):
+    update()
     match state:
         PURSUING:
             pursuit(delta)
@@ -69,9 +71,20 @@ func _process(delta):
             pass
         TELEPORTING:
             pass
+    
+    #negative is left, positive is right        
+    var player_side = pursuit_position.x - sprite.position.x        
+    if (player_side >= 0 and sprite.scale.x < 0) or (player_side < 0 and sprite.scale.x > 0):
+        sprite.scale.x *= -1
+            
+func _draw():
+    pass
+    #draw_line(sprite.position, pursuit_position, Color(255, 0, 0 ), 1)
+    #draw_line(sprite.position, (sprite.position + velocity), Color(255, 0, 0), 1)
 
     
 func teleport():
+    velocity = Vector2.ZERO
     rng.randomize()
     var rng_index = rng.randi_range(0, 2)
     var teleport_choice = boss_teleport_positions[rng_index]
@@ -79,17 +92,22 @@ func teleport():
     animationState.travel("Teleport")
 
 func idle():
+    velocity = Vector2.ZERO
     animationState.travel("Idle")
     
 func pursuit(delta):
     animationState.travel("Pursuit")
-    velocity = velocity.move_toward(pursuit_position, PURSUIT_SPEED * delta)
+    velocity = velocity.move_toward(pursuit_position, delta)
     move_and_collide(velocity)
+    if (to_global(sprite.position) - to_global(pursuit_position)).length() <= 20:
+        simple_attack()
     
 func simple_attack():
+    velocity = Vector2.ZERO
     animationState.travel("SimpleAttack")
 
 func wide_attack():
+    velocity = Vector2.ZERO
     animationState.travel("WideAttack")
           
 func take_damage(damage_to_receive, knockback):
@@ -113,6 +131,7 @@ func awaken():
 func choose_behavior():
     rng.randomize()
     var behavior = rng.randi_range(0, 2)
+    #var behavior = 2
     if behavior == 0:
         teleport()
     elif behavior == 1:
@@ -169,5 +188,4 @@ func _on_PursuitAndIdleTimer_timeout():
         pursuitAndIdleTimer.stop()
 
 func _on_Player_send_player_position(player_position):
-    pursuit_position = player_position
-    #print(pursuit_position)
+    pursuit_position = to_local(player_position + Vector2(0, -12))
