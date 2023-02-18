@@ -5,6 +5,7 @@ const GRAVITY = 600.0
 #5 frames of hit delay
 const HIT_DELAY = 0.016666 * 3
 const KNOCKBACK_PERIOD = 0.3
+const INITIAL_DAMAGE_DEALT = 20
 
 onready var minionSprite = $Sprite
 onready var minionDeathSprite = $DeathSprite
@@ -29,6 +30,8 @@ var velocity = Vector2.ZERO
 
 var max_health = 100
 var current_health = max_health
+
+var attack_damage = INITIAL_DAMAGE_DEALT
 
 func get_class():
     return "Minion"
@@ -71,7 +74,6 @@ func take_damage(damage_to_receive, knockback):
     timer.start()
     velocity = knockback
     current_health -= damage_to_receive
-    print(current_health)
     
 func _on_Timer_timeout():
     if current_health <= 0:
@@ -86,3 +88,11 @@ func _on_Timer_timeout():
 func _on_KnockbackPeriod_timeout():
     state = NORMAL
     knockbackPeriod.stop()
+
+
+func _on_Hitbox_area_entered(area):
+    var bodies = area.get_overlapping_bodies()
+    for body in bodies:
+        pass
+        #print(body.get_class())
+

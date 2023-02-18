@@ -21,7 +21,8 @@ const STATE_DEBUG = false
 enum {
     GROUND,
     JUMP,
-    GRAPPLE
+    GRAPPLE,
+    DEATH
 }
 
 var state = JUMP
@@ -47,6 +48,7 @@ signal player_interacted(area)
 signal interacted_with_shrine(isCurseShrine)
 signal interacted_with_key(keyNode)
 signal activated_teleporter()
+signal send_player_position(player_position)
 signal paused_game()
 
 func _ready():
@@ -59,6 +61,7 @@ func _ready():
     animationTree.active = true
    
 func _process(delta):
+    emit_signal("send_player_position", to_global(position))
     #MOVEMENT
     match state:
         GROUND:
@@ -186,9 +189,15 @@ func aim_shotgun():
 #Damage
 func receive_damage(damage_to_receive):
     current_health -= damage_to_receive * damage_received_modifier
+    if current_health <= 0:
+        state = DEATH
+        #dirt way to handle it, but easier than figuring out a lerp for now.
+        Shotgun.visible = false
+        animationState.travel("Death")
+        #TODO: add teleport method here and move state back to ground
+        
 
 # INTERACTIONS
-
 func _on_InteractHitbox_area_entered(area):
     var node = area.get_owner()
     interactable = node
@@ -211,3 +220,11 @@ func _on_curse_purchased(curses):
     for curse in curses:
         print("Purchased %s" % curse.name)
     modified_speed -= 50
+
+
+func _on_Hurtbox_area_entered(area):
+    #print("hurtbox hit")
+    var bodies = area.get_overlapping_bodies()
+    for body in bodies:
+        if body.get_class() == "Minion" or body.get_class() == "Boss":
+            receive_damage(body.attack_damage)

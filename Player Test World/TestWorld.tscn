@@ -1,8 +1,11 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Player/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Level/Tilemap.tscn" type="PackedScene" id=2]
 [ext_resource path="res://NPC/Minion/Minion.tscn" type="PackedScene" id=3]
+[ext_resource path="res://NPC/Boss/Boss.tscn" type="PackedScene" id=4]
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=1]
 
 [node name="TestWorld" type="Node2D"]
 
@@ -14,3 +17,25 @@ tile_data = PoolIntArray( 1572865, 57, 0, 1572866, 57, 1, 1572867, 57, 0, 157286
 
 [node name="Minion" parent="." instance=ExtResource( 3 )]
 position = Vector2( 173, 264 )
+
+[node name="Boss" parent="." instance=ExtResource( 4 )]
+position = Vector2( 333, 222 )
+
+[node name="AnimationTree" parent="Boss" index="3"]
+parameters/playback = SubResource( 1 )
+
+[node name="TeleportPosition1" parent="Boss" index="9"]
+position = Vector2( 30, 0 )
+
+[node name="TeleportPosition2" parent="Boss" index="10"]
+position = Vector2( -83, 42 )
+
+[node name="TeleportPosition3" parent="Boss" index="11"]
+position = Vector2( -270, 35 )
+
+[connection signal="send_player_position" from="Player" to="Boss" method="_on_Player_send_player_position"]
+
+[editable path="Boss"]
+[editable path="Boss/HitboxPivot/Hitbox"]
+[editable path="Boss/WideAttackLeft"]
+[editable path="Boss/WideAttackRight"]
