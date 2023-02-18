@@ -18,8 +18,6 @@ func _process(delta):
     pass
 
 func shoot():
-    print("Bang")
-    print(to_global(raycast.cast_to).normalized())
     animationPlayer.play("Fire")
     if raycast.is_colliding():
         var hit_object = raycast.get_collider()
@@ -28,6 +26,3 @@ func shoot():
             var knockback_direction = raycast.get_collision_normal()
             knockback_direction.x *= -1
             hit_object.take_damage(20, knockback_direction * knockback_force)
-    
-func apply_damage(enemy):
-    pass

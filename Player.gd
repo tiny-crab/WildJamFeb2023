@@ -36,6 +36,8 @@ var interactable = null
 var damage_received_modifier = 1
 var current_health = INTIAL_HEALTH
 
+var shotgun_has_sight = true
+
 onready var player = $PlayerSprite
 onready var animationPlayer = $AnimationPlayer
 onready var animationTree = $AnimationTree
@@ -61,6 +63,7 @@ func _ready():
     animationTree.active = true
    
 func _process(delta):
+    update()
     emit_signal("send_player_position", position)
     #MOVEMENT
     match state:
@@ -184,6 +187,16 @@ func aim_shotgun():
     var look_at_position = get_local_mouse_position().normalized() * SHOTGUN_OFFSET * 10
     
     ShotgunPosition.look_at(to_global(look_at_position))
+    
+func _draw():
+       
+    if shotgun_has_sight:
+        var look_at_position = get_local_mouse_position().normalized() * SHOTGUN_OFFSET * 10
+        var sight_begin_position = ShotgunPosition.position + Vector2(0, -24)
+        draw_line(sight_begin_position, look_at_position, Color(255, 0, 0), 1)
+    pass
+    #draw_line(sprite.position, pursuit_position, Color(255, 0, 0 ), 1)
+    #draw_line(sprite.position, (sprite.position + velocity), Color(255, 0, 0), 1)
 
 
 #Damage
