@@ -61,7 +61,7 @@ func _ready():
     animationTree.active = true
    
 func _process(delta):
-    emit_signal("send_player_position", to_global(position))
+    emit_signal("send_player_position", position)
     #MOVEMENT
     match state:
         GROUND:
