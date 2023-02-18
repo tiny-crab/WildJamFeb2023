@@ -1,8 +1,9 @@
-[gd_scene load_steps=23 format=2]
+[gd_scene load_steps=25 format=2]
 
 [ext_resource path="res://Assets/Animated objects/Portal/idle 28x41.png" type="Texture" id=1]
 [ext_resource path="res://Assets/Animated objects/Portal/warp 28x41.png" type="Texture" id=2]
 [ext_resource path="res://Level/Teleporter.gd" type="Script" id=3]
+[ext_resource path="res://Systems/InteractHurtbox.tscn" type="PackedScene" id=4]
 
 [sub_resource type="AtlasTexture" id=11]
 atlas = ExtResource( 2 )
@@ -89,6 +90,9 @@ animations = [ {
 "speed": 10.0
 } ]
 
+[sub_resource type="RectangleShape2D" id=20]
+extents = Vector2( 14, 15 )
+
 [node name="Teleporter" type="Node2D"]
 script = ExtResource( 3 )
 
@@ -96,4 +100,14 @@ script = ExtResource( 3 )
 frames = SubResource( 10 )
 animation = "Idle"
 
+[node name="InteractHurtbox" parent="." instance=ExtResource( 4 )]
+
+[node name="CollisionShape2D" parent="InteractHurtbox" index="0"]
+position = Vector2( 0, 5 )
+shape = SubResource( 20 )
+
 [connection signal="animation_finished" from="AnimatedSprite" to="." method="_on_AnimatedSprite_animation_finished"]
+[connection signal="area_entered" from="InteractHurtbox" to="." method="_on_InteractHurtbox_area_entered"]
+[connection signal="area_exited" from="InteractHurtbox" to="." method="_on_InteractHurtbox_area_exited"]
+
+[editable path="InteractHurtbox"]
