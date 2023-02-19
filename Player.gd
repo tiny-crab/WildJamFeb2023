@@ -4,11 +4,11 @@ extends KinematicBody2D
 const UP = Vector2(0, -1)
 const GRAVITY = 600.0
 const ACCELERATION = 500
-const MAX_SPEED = 120
-onready var modified_speed = MAX_SPEED
+const INITIAL_SPEED = 120
+onready var modified_speed = INITIAL_SPEED
 const TERMINAL_SPEED = 120
 const FRICTION = 800
-const JUMP_VELOCITY = -200
+const INITIAL_JUMP_VELOCITY = -200
 const CHAIN_PULL = 105
 const SHOTGUN_OFFSET = 20
 const SHOTGUN_CENTER_OFFSET = Vector2(0, -12)
@@ -31,6 +31,9 @@ var hook_velocity = Vector2.ZERO
 # not a const because we may want to change this during gameplay
 var max_grapple_charges = 3
 var grapple_charges = max_grapple_charges
+var max_jump_charges = 1
+var jump_charges = max_jump_charges
+var jump_velocity = INITIAL_JUMP_VELOCITY
 var interactable = null
 
 var damage_received_modifier = 1
@@ -80,8 +83,9 @@ func _process(delta):
             if STATE_DEBUG:
                 print("Grapple")
             
-    if Input.is_action_just_pressed("jump") and state == GROUND:
-        velocity.y = JUMP_VELOCITY
+    if Input.is_action_just_pressed("jump") and (state == GROUND or jump_charges >= 1):
+        jump_charges -= 1
+        velocity.y = jump_velocity
         animationState.travel("Jump")
         state = JUMP
         
@@ -119,6 +123,7 @@ func _process(delta):
             push_warning("Attempted to interact with an Interactable without a class")
     
     if Input.is_action_just_pressed("reset"):
+        #used for teleportation
         emit_signal("activated_teleporter")
         
     if Input.is_action_just_pressed("pause"):
@@ -157,6 +162,7 @@ func move_jump(delta):
     
     if is_on_floor() and velocity.y >= 0:
         grapple_charges = max_grapple_charges
+        jump_charges = max_jump_charges
         state = GROUND
     play_in_air_animations()
         
@@ -188,15 +194,11 @@ func aim_shotgun():
     
     ShotgunPosition.look_at(to_global(look_at_position))
     
-func _draw():
-       
+func _draw():   
     if shotgun_has_sight:
         var look_at_position = get_local_mouse_position().normalized() * SHOTGUN_OFFSET * 10
         var sight_begin_position = ShotgunPosition.position + Vector2(0, -24)
         draw_line(sight_begin_position, look_at_position, Color(255, 0, 0), 1)
-    pass
-    #draw_line(sprite.position, pursuit_position, Color(255, 0, 0 ), 1)
-    #draw_line(sprite.position, (sprite.position + velocity), Color(255, 0, 0), 1)
 
 
 #Damage
@@ -232,7 +234,41 @@ func _on_Interacted_with_Key(node):
 func _on_curse_purchased(curses):
     for curse in curses:
         print("Purchased %s" % curse.name)
-    modified_speed -= 50
+        match curse.name:
+            "Damage +":
+                var damage_increase = Shotgun.damage * 0.5
+                Shotgun.alter_damage(damage_increase)
+            "Damage -":
+                var damage_decrease = Shotgun.damage * -0.5
+                Shotgun.alter_damage(damage_decrease)
+            "Jump Charges":
+                max_jump_charges += 1
+            "Fall Damage":
+                #Maybe add fall damage someday
+                pass
+            "Jump Height +":
+                jump_velocity = jump_velocity * 1.1
+            "Jump Height -":
+                jump_velocity = clamp(jump_velocity - (jump_velocity * .1), -10, -1000000000000)
+            "Move Speed +":
+                modified_speed = modified_speed * 1.1
+            "Move Speed -":
+                modified_speed = clamp(modified_speed - (modified_speed * -1), 20, 1000000000000)
+            "Grapple Charge +":
+                grapple_charges += 1
+            "Grapple Charge -":
+                grapple_charges = clamp(grapple_charges - 1, 1, 10000000000)
+            "Grapple Length +":
+                grapplingHook.chain_length = grapplingHook.chain_length * 1.1
+            "Grapple Length -":
+                grapplingHook.chain_length = clamp(grapplingHook.chain_length - (grapplingHook.chain_length *.1), 100, 1000000000)
+            "Grapple Time +":
+                grapplingHook.grapple_duration = grapplingHook.grapple_duration * 1.1
+            "Grapple Time -":
+                grapplingHook.grapple_duration = clamp(grapplingHook.grapple_duration - (grapplingHook.grapple_duration *.1), 0.25, 1000000000)
+            
+            
+            
 
 
 func _on_Hurtbox_area_entered(area):

@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource( 1 )
-name = "Jump Charges"
-description = "The air rushes around your body in a lithe dance."
-value = 4
+name = "Grapple Time +"
+description = "You've become Tarzan(tm)"
+value = 1
 isCurse = false
