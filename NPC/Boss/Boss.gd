@@ -64,6 +64,7 @@ func _ready():
     SignalBus.add_emitter("boss_powered_up", self)
     SignalBus.add_emitter("pact_offered", self)
     SignalBus.add_emitter("boss_unlocked", self)
+    SignalBus.add_listener("boss_unlocked", self, "_on_Boss_unlocked")
     SignalBus.add_listener("curse_purchased", self, "_on_curse_purchased")
     scale = INITIAL_SCALE
     collision.disabled = true
@@ -140,11 +141,14 @@ func power_up():
 func change_pursuit_and_idle_time(min_time, max_time):
     current_min_pursuitTime = min_time
     current_max_pursuitTime = max_time
+    
+func _on_Boss_unlocked():
+    awaken()
          
 func awaken():
-    state = IDLE
     collision.disabled = false
     chargeUpTimer.stop()
+    teleport()
     
 func choose_behavior():
     rng.randomize()
