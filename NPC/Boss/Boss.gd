@@ -21,6 +21,7 @@ onready var animationTree = $AnimationTree
 onready var animationState = animationTree.get("parameters/playback")
 onready var chargeUpTimer = $ChargeUpTimer
 onready var pursuitAndIdleTimer = $PursuitAndIdleTimer
+onready var collision = $CollisionShape2D
 var current_min_pursuitTime = MIN_PURSUIT_TIME
 var current_max_pursuitTime = MAX_PURSUIT_TIME
 
@@ -57,6 +58,7 @@ func _ready():
     chargeUpTimer.connect("timeout", self, "_on_Timer_timeout")
     pursuitAndIdleTimer.connect("timeout", self, "_on_PursuitAndIdleTimer_timeout")
     scale = INITIAL_SCALE
+    collision.disabled = true
     if state == CHARGING:
         animationState.travel("Idle")
         chargeUpTimer.wait_time = current_charge_increment_time
@@ -119,6 +121,7 @@ func power_up():
     power += 1
     attack_damage += 0.5
     if power >= MAX_POWER:
+        collision.disabled = false
         chargeUpTimer.stop()
         teleport()
         
@@ -128,6 +131,7 @@ func change_pursuit_and_idle_time(min_time, max_time):
          
 func awaken():
     state = IDLE
+    collision.disabled = false
     chargeUpTimer.stop()
     
 func choose_behavior():

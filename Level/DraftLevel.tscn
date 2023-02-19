@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://Player/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Props/BossDoor.tscn" type="PackedScene" id=2]
@@ -15,6 +15,9 @@
 [ext_resource path="res://UI/PauseMenu.tscn" type="PackedScene" id=13]
 [ext_resource path="res://UI/Dialogue.tscn" type="PackedScene" id=14]
 [ext_resource path="res://Props/Root.tscn" type="PackedScene" id=15]
+[ext_resource path="res://NPC/Boss/Boss.tscn" type="PackedScene" id=16]
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=1]
 
 [node name="DraftLevel" type="Node2D"]
 script = ExtResource( 9 )
@@ -38,14 +41,20 @@ position = Vector2( 232, -141 )
 position = Vector2( -75, -400 )
 isCurseShrine = false
 
+[node name="Shrine2" parent="." instance=ExtResource( 7 )]
+position = Vector2( 40, -1086 )
+
+[node name="Shrine3" parent="." instance=ExtResource( 7 )]
+position = Vector2( -193, -1089 )
+isCurseShrine = false
+
 [node name="Teleporter" parent="." instance=ExtResource( 8 )]
-position = Vector2( 442, -19 )
+position = Vector2( 496, -19 )
 
 [node name="Minion24" parent="." instance=ExtResource( 5 )]
 position = Vector2( -117, -1033 )
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
-visible = false
 
 [node name="ShrineUI" parent="CanvasLayer" instance=ExtResource( 4 )]
 visible = false
@@ -223,6 +232,27 @@ rotation = -3.14159
 scale = Vector2( -1, 1 )
 region_rect = Rect2( 144, 128, 48, 80 )
 
+[node name="Boss" parent="." instance=ExtResource( 16 )]
+position = Vector2( 230, -104 )
+
+[node name="AnimationTree" parent="Boss" index="3"]
+parameters/playback = SubResource( 1 )
+
+[node name="TeleportPosition1" parent="Boss" index="9"]
+position = Vector2( 180, 100 )
+
+[node name="TeleportPosition2" parent="Boss" index="10"]
+position = Vector2( -248, 114 )
+
+[node name="TeleportPosition3" parent="Boss" index="11"]
+position = Vector2( -9, 31 )
+
+[connection signal="send_player_position" from="Player" to="Boss" method="_on_Player_send_player_position"]
 [connection signal="key_pickup" from="West/Key" to="West" method="_on_Key_key_pickup"]
 [connection signal="key_pickup" from="East/Key" to="East" method="_on_Key_key_pickup"]
 [connection signal="key_pickup" from="South/Key" to="South" method="_on_Key_key_pickup"]
+
+[editable path="Boss"]
+[editable path="Boss/HitboxPivot/Hitbox"]
+[editable path="Boss/WideAttackLeft"]
+[editable path="Boss/WideAttackRight"]

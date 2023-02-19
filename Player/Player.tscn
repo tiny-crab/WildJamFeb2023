@@ -193,7 +193,7 @@ position = Vector2( 0, -24 )
 texture = ExtResource( 6 )
 hframes = 9
 vframes = 13
-frame = 97
+frame = 98
 
 [node name="ShotgunPosition" type="Node2D" parent="PlayerSprite"]
 position = Vector2( -2, 7 )

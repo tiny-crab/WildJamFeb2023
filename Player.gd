@@ -266,10 +266,8 @@ func _on_curse_purchased(curses):
                 grapplingHook.grapple_duration = grapplingHook.grapple_duration * 1.1
             "Grapple Time -":
                 grapplingHook.grapple_duration = clamp(grapplingHook.grapple_duration - (grapplingHook.grapple_duration *.1), 0.25, 1000000000)
-            
-            
-            
-
+            "Lose LaserSight":
+                shotgun_has_sight = false
 
 func _on_Hurtbox_area_entered(area):
     #print("hurtbox hit")
