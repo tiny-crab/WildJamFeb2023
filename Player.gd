@@ -45,6 +45,8 @@ var shotgun_is_cursed = false
 var num_boss_attempts = 5
 var should_lose_attempt = false
 
+var hover_jump_on = false
+
 onready var player = $PlayerSprite
 onready var animationPlayer = $AnimationPlayer
 onready var animationTree = $AnimationTree
@@ -95,6 +97,9 @@ func _process(delta):
         velocity.y = jump_velocity
         animationState.travel("Jump")
         state = JUMP
+    
+    if Input.is_action_pressed("hover_down") and state == JUMP and hover_jump_on:
+        velocity.y += GRAVITY * 0.8 * delta
         
     if Input.is_action_just_pressed("grapple") and grapple_charges >= 1:
         grapplingHook.shoot(get_local_mouse_position())
@@ -144,7 +149,10 @@ func _on_grappling_released():
     
 func _physics_process(delta):
     if state == JUMP or state == GROUND:
-        velocity.y += delta * GRAVITY
+        if not hover_jump_on:
+            velocity.y += delta * GRAVITY
+        else:
+            velocity.y += delta * GRAVITY * 0.1
     
 func move_ground(delta):
     var input_vector = Vector2.ZERO
@@ -301,6 +309,13 @@ func _on_curse_purchased(curses):
                 grapplingHook.grapple_duration = clamp(grapplingHook.grapple_duration - (grapplingHook.grapple_duration *.1), 0.25, 1000000000)
             "Lose LaserSight":
                 shotgun_has_sight = false
+            #PACTS BEGIN
+            "Hover Jump":
+                hover_jump_on = true
+            "Double Damage":
+                Shotgun.damage = Shotgun.damage * 2
+            "Double Health":
+                current_health = current_health *2
 
 func _on_Hurtbox_area_entered(area):
     #print("hurtbox hit")

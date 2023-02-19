@@ -1,7 +1,7 @@
 extends KinematicBody2D
 
 const INITIAL_HEALTH = 300
-const INTIAL_CHARGE_INCREMENT_TIME = 10
+const INTIAL_CHARGE_INCREMENT_TIME = 0.5
 const INITIAL_SCALE = Vector2(0.1, 0.1)
 const SCALE_INCREMENT = Vector2(0.01, 0.01)
 const INITIAL_DAMAGE_DEALT = 5
@@ -64,6 +64,7 @@ func _ready():
     SignalBus.add_emitter("boss_powered_up", self)
     SignalBus.add_emitter("pact_offered", self)
     SignalBus.add_emitter("boss_unlocked", self)
+    SignalBus.add_listener("curse_purchased", self, "_on_curse_purchased")
     scale = INITIAL_SCALE
     collision.disabled = true
     if state == CHARGING:
@@ -177,7 +178,7 @@ func wide_attack_finished():
 
 func simple_attack_finished():
     state = IDLE
-    var pursuit_time = rng.randi_range(MIN_PURSUIT_TIME, MAX_PURSUIT_TIME)
+    var pursuit_time = rng.randi_range(current_min_pursuitTime, current_max_pursuitTime)
     pursuitAndIdleTimer.wait_time = pursuit_time
     pursuitAndIdleTimer.start()
     
@@ -206,3 +207,13 @@ func _on_PursuitAndIdleTimer_timeout():
 
 func _on_Player_send_player_position(player_position):
     pursuit_position = to_local(player_position + Vector2(0, -12))
+    
+func _on_curse_purchased(curses):
+    for curse in curses:
+        match curse.name:
+            "Hover Jump":
+                change_pursuit_and_idle_time(current_min_pursuitTime * 0.5, current_max_pursuitTime * 0.5)
+            "Double Damage":
+                current_health *= 2
+            "Double Health":
+                power += 10
