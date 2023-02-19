@@ -52,6 +52,7 @@ onready var Shotgun = $PlayerSprite/ShotgunPosition/Shotgun
 signal player_interacted(area)
 signal interacted_with_shrine(shrineNode)
 signal interacted_with_key(keyNode)
+signal interacted_with_boss(bossNode)
 signal activated_teleporter()
 signal send_player_position(player_position)
 signal paused_game()
@@ -61,6 +62,7 @@ func _ready():
     SignalBus.add_listener("curse_purchased", self, "_on_curse_purchased")
     SignalBus.add_emitter("interacted_with_shrine", self)
     SignalBus.add_emitter("interacted_with_key", self)
+    SignalBus.add_emitter("interacted_with_boss", self)
     SignalBus.add_emitter("activated_teleporter", self)
     SignalBus.add_emitter("paused_game", self)
     animationTree.active = true
@@ -119,6 +121,8 @@ func _process(delta):
             _on_Interacted_with_Shrine(interactable)
         elif (interactable.get_class() == "Key"):
             _on_Interacted_with_Key(interactable)
+        elif (interactable.get_class() == "Boss"):
+            _on_Interacted_with_Boss(interactable)
         else:
             push_warning("Attempted to interact with an Interactable without a class")
     
@@ -228,6 +232,9 @@ func _on_Interacted_with_Shrine(node):
 
 func _on_Interacted_with_Key(node):
     emit_signal("interacted_with_key", node)
+    
+func _on_Interacted_with_Boss(node):
+    emit_signal("interacted_with_boss", node)
 
 # CURSES
 

@@ -49,6 +49,10 @@ enum {
 
 var state = CHARGING
 
+signal pact_offered()
+signal boss_powered_up(numPower)
+signal boss_unlocked()
+
 func get_class():
     return "Boss"
     
@@ -57,6 +61,9 @@ func _ready():
     animationTree.active = true
     chargeUpTimer.connect("timeout", self, "_on_Timer_timeout")
     pursuitAndIdleTimer.connect("timeout", self, "_on_PursuitAndIdleTimer_timeout")
+    SignalBus.add_emitter("boss_powered_up", self)
+    SignalBus.add_emitter("pact_offered", self)
+    SignalBus.add_emitter("boss_unlocked", self)
     scale = INITIAL_SCALE
     collision.disabled = true
     if state == CHARGING:
@@ -124,6 +131,10 @@ func power_up():
         collision.disabled = false
         chargeUpTimer.stop()
         teleport()
+        emit_signal("boss_unlocked")
+    if power == 25 or power == 50 or power == 75:
+        emit_signal("pact_offered")
+    emit_signal("boss_powered_up", power)
         
 func change_pursuit_and_idle_time(min_time, max_time):
     current_min_pursuitTime = min_time
