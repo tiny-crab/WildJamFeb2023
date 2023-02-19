@@ -2,6 +2,7 @@ extends Control
 
 var activatedShrine: Shrine = null
 var displayedCurse: Curse = null
+var availableSap: int = 0
 var curseOptions = []
 var selectedCurses = []
 var curseSelectionUIs = []
@@ -17,7 +18,8 @@ func _ready():
         var selectionUI = curseSelectionUIs[i]
         selectionUI.connect("toggled", self, "_curse_toggled", [i])
     
-func _on_Interacted_with_shrine(shrine: Shrine):
+func _on_Interacted_with_shrine(shrine: Shrine, currentSap: int):
+    availableSap = currentSap
     activatedShrine = shrine
     curseOptions = shrine.selections
     isCurseUI = shrine.isCurseShrine
@@ -30,6 +32,7 @@ func _on_Interacted_with_shrine(shrine: Shrine):
     displayedCurse = curseOptions[0]
     $CurseDescription.text = ""
     $CurseValue.text = ""
+    $TotalSap.text = "%s total sap" % availableSap
     show()
 
 func _curse_toggled(toggled_state, curseIndex: int):
@@ -63,10 +66,22 @@ func _on_CloseButton_pressed():
     displayedCurse = null
     selectedCurses = []
     hide()
+    
+func _compute_cost():
+    var sum = 0
+    for curse in selectedCurses:
+        sum += curse.value
+    sum += selectedCurses.size()-1
+    print("total sum %s" % sum)
+    return sum
 
 func _on_BuyButton_pressed():
-    activatedShrine.destroy()
-    emit_signal("curse_purchased", selectedCurses)
-    displayedCurse = null
-    selectedCurses = []
-    hide()
+    if !isCurseUI and availableSap < _compute_cost():
+        pass
+    else:
+        activatedShrine.destroy()
+        emit_signal("curse_purchased", selectedCurses)
+        displayedCurse = null
+        selectedCurses = []
+        hide()
+    

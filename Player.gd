@@ -39,6 +39,8 @@ var interactable = null
 var damage_received_modifier = 1
 var current_health = INTIAL_HEALTH
 
+var current_sap = 0
+
 var shotgun_has_sight = true
 var shotgun_is_cursed = false
 
@@ -56,7 +58,7 @@ onready var ShotgunPosition = $PlayerSprite/ShotgunPosition
 onready var Shotgun = $PlayerSprite/ShotgunPosition/Shotgun
 
 signal player_interacted(area)
-signal interacted_with_shrine(shrineNode)
+signal interacted_with_shrine(shrineNode, currentSap)
 signal interacted_with_key(keyNode)
 signal interacted_with_boss(bossNode)
 signal activated_teleporter()
@@ -262,7 +264,7 @@ func _on_InteractHitbox_area_exited(area):
 
 func _on_Interacted_with_Shrine(node):
     if (!node.destroyed):
-        emit_signal("interacted_with_shrine", node)
+        emit_signal("interacted_with_shrine", node, current_sap)
 
 func _on_Interacted_with_Key(node):
     emit_signal("interacted_with_key", node)
@@ -273,8 +275,14 @@ func _on_Interacted_with_Boss(node):
 # CURSES
 
 func _on_curse_purchased(curses):
+    var subtractExtraCost = false
     for curse in curses:
         print("Purchased %s" % curse.name)
+        if curse.isCurse:
+            current_sap += curse.value
+        else:
+            subtractExtraCost = true
+            current_sap -= curse.value
         match curse.name:
             "Damage +":
                 var damage_increase = Shotgun.damage * 0.5
@@ -316,6 +324,10 @@ func _on_curse_purchased(curses):
                 Shotgun.damage = Shotgun.damage * 2
             "Double Health":
                 current_health = current_health *2
+    if subtractExtraCost:
+        current_sap -= curses.size()-1
+    else:
+        current_sap += curses.size()-1
 
 func _on_Hurtbox_area_entered(area):
     #print("hurtbox hit")

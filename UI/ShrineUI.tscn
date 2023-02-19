@@ -6,14 +6,10 @@
 [sub_resource type="Theme" id=1]
 Label/colors/font_color = Color( 0.678431, 0.231373, 0.231373, 1 )
 
-[node name="ShrineUI" type="Control"]
+[node name="ShrineUI" type="Panel"]
 anchor_right = 1.0
 margin_bottom = 128.0
 script = ExtResource( 1 )
-
-[node name="Panel" type="Panel" parent="."]
-margin_right = 1024.0
-margin_bottom = 128.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 margin_left = 952.0
@@ -38,8 +34,8 @@ text = "Close"
 [node name="CurseSelections" type="HBoxContainer" parent="."]
 margin_left = 24.0
 margin_top = 16.0
-margin_right = 304.0
-margin_bottom = 104.0
+margin_right = 424.0
+margin_bottom = 112.0
 __meta__ = {
 "_edit_group_": true
 }
@@ -51,8 +47,8 @@ anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 0.0
 margin_top = 0.0
-margin_right = 90.0
-margin_bottom = 88.0
+margin_right = 130.0
+margin_bottom = 96.0
 size_flags_horizontal = 3
 
 [node name="CurseSelection2" parent="CurseSelections" instance=ExtResource( 2 )]
@@ -60,10 +56,10 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 94.0
+margin_left = 134.0
 margin_top = 0.0
-margin_right = 185.0
-margin_bottom = 88.0
+margin_right = 265.0
+margin_bottom = 96.0
 size_flags_horizontal = 3
 
 [node name="CurseSelection3" parent="CurseSelections" instance=ExtResource( 2 )]
@@ -71,26 +67,36 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 189.0
+margin_left = 269.0
 margin_top = 0.0
-margin_right = 280.0
-margin_bottom = 88.0
+margin_right = 400.0
+margin_bottom = 96.0
 size_flags_horizontal = 3
 
 [node name="CurseDescription" type="Label" parent="."]
-margin_left = 344.0
-margin_top = 40.0
-margin_right = 808.0
-margin_bottom = 88.0
+margin_left = 440.0
+margin_top = 24.0
+margin_right = 904.0
+margin_bottom = 72.0
 text = "Test description"
+autowrap = true
 
 [node name="CurseValue" type="Label" parent="."]
-margin_left = 344.0
+margin_left = 448.0
 margin_top = 80.0
-margin_right = 410.0
+margin_right = 514.0
 margin_bottom = 94.0
 theme = SubResource( 1 )
 text = "Test Value"
+
+[node name="TotalSap" type="Label" parent="."]
+margin_left = 928.0
+margin_top = 80.0
+margin_right = 994.0
+margin_bottom = 94.0
+theme = SubResource( 1 )
+text = "Test Value"
+align = 2
 
 [connection signal="pressed" from="VBoxContainer/BuyButton" to="." method="_on_BuyButton_pressed"]
 [connection signal="pressed" from="VBoxContainer/CloseButton" to="." method="_on_CloseButton_pressed"]
