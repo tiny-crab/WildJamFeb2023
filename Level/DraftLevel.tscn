@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://Player/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Props/BossDoor.tscn" type="PackedScene" id=2]
@@ -15,7 +15,8 @@
 [ext_resource path="res://UI/PauseMenu.tscn" type="PackedScene" id=13]
 [ext_resource path="res://UI/Dialogue.tscn" type="PackedScene" id=14]
 [ext_resource path="res://Props/Root.tscn" type="PackedScene" id=15]
-[ext_resource path="res://NPC/Boss/Boss.tscn" type="PackedScene" id=16]
+[ext_resource path="res://UI/PactMenu.tscn" type="PackedScene" id=16]
+[ext_resource path="res://NPC/Boss/Boss.tscn" type="PackedScene" id=17]
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=1]
 
@@ -41,13 +42,6 @@ position = Vector2( 232, -141 )
 position = Vector2( -75, -400 )
 isCurseShrine = false
 
-[node name="Shrine2" parent="." instance=ExtResource( 7 )]
-position = Vector2( 40, -1086 )
-
-[node name="Shrine3" parent="." instance=ExtResource( 7 )]
-position = Vector2( -193, -1089 )
-isCurseShrine = false
-
 [node name="Teleporter" parent="." instance=ExtResource( 8 )]
 position = Vector2( 496, -19 )
 
@@ -68,6 +62,17 @@ margin_right = 201.5
 margin_bottom = 133.0
 
 [node name="Dialogue" parent="CanvasLayer" instance=ExtResource( 14 )]
+
+[node name="PactMenu" parent="CanvasLayer" instance=ExtResource( 16 )]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -208.5
+margin_top = -140.0
+margin_right = 208.5
+margin_bottom = 140.0
 
 [node name="West" type="Node" parent="."]
 script = ExtResource( 11 )
@@ -232,7 +237,7 @@ rotation = -3.14159
 scale = Vector2( -1, 1 )
 region_rect = Rect2( 144, 128, 48, 80 )
 
-[node name="Boss" parent="." instance=ExtResource( 16 )]
+[node name="Boss" parent="." instance=ExtResource( 17 )]
 position = Vector2( 230, -104 )
 
 [node name="AnimationTree" parent="Boss" index="3"]
