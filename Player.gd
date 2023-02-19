@@ -61,6 +61,7 @@ signal player_interacted(area)
 signal interacted_with_shrine(shrineNode, currentSap)
 signal interacted_with_key(keyNode)
 signal interacted_with_boss(bossNode)
+signal player_health_changed(newHealth)
 signal activated_teleporter()
 signal send_player_position(player_position)
 signal paused_game()
@@ -73,6 +74,7 @@ func _ready():
     SignalBus.add_emitter("interacted_with_key", self)
     SignalBus.add_emitter("interacted_with_boss", self)
     SignalBus.add_emitter("activated_teleporter", self)
+    SignalBus.add_emitter("player_health_changed", self)
     SignalBus.add_emitter("paused_game", self)
     animationTree.active = true
    
@@ -230,6 +232,7 @@ func receive_damage(damage_to_receive):
         shotgun_has_sight = false
         animationState.travel("Death")
         #TODO: add teleport method here and move state back to ground
+    emit_signal("player_health_changed", current_health)
 
 #called when death animation finishes from animation player        
 func death():

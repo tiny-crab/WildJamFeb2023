@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=2]
+[gd_scene load_steps=25 format=2]
 
 [ext_resource path="res://Player/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Props/BossDoor.tscn" type="PackedScene" id=2]
@@ -21,6 +21,8 @@
 [ext_resource path="res://Props/Torch.tscn" type="PackedScene" id=19]
 [ext_resource path="res://Props/RedRoot.tscn" type="PackedScene" id=20]
 [ext_resource path="res://Props/Flower.tscn" type="PackedScene" id=21]
+[ext_resource path="res://UI/HealthBar.tscn" type="PackedScene" id=22]
+[ext_resource path="res://UI/ProgressBarTheme.tres" type="Theme" id=23]
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=1]
 
@@ -73,6 +75,13 @@ margin_left = -208.5
 margin_top = -140.0
 margin_right = 208.5
 margin_bottom = 140.0
+
+[node name="HealthBar" parent="CanvasLayer" instance=ExtResource( 22 )]
+anchor_top = 1.0
+anchor_right = 0.0
+margin_top = -34.0
+margin_right = 118.0
+theme = ExtResource( 23 )
 
 [node name="West" type="Node" parent="."]
 script = ExtResource( 11 )
@@ -770,19 +779,19 @@ region_rect = Rect2( 256, 320, 144, 48 )
 
 [node name="AnimatedSprite2" parent="Scenery" instance=ExtResource( 21 )]
 position = Vector2( 693, -776 )
-frame = 2
+frame = 9
 
 [node name="AnimatedSprite" parent="Scenery" instance=ExtResource( 21 )]
 position = Vector2( 1091, -936 )
-frame = 3
+frame = 0
 
 [node name="AnimatedSprite3" parent="Scenery" instance=ExtResource( 21 )]
 position = Vector2( 744, -40 )
-frame = 2
+frame = 9
 
 [node name="AnimatedSprite4" parent="Scenery" instance=ExtResource( 21 )]
 position = Vector2( 1627, 10 )
-frame = 2
+frame = 9
 
 [node name="GreenRoot45" parent="Scenery" instance=ExtResource( 10 )]
 position = Vector2( 1018, -918 )
@@ -800,63 +809,62 @@ region_rect = Rect2( 144, 128, 48, 80 )
 
 [node name="Torch" parent="Scenery" instance=ExtResource( 19 )]
 position = Vector2( -287, -66 )
-frame = 5
 
 [node name="Torch12" parent="Scenery" instance=ExtResource( 19 )]
 position = Vector2( -235, 257 )
-frame = 4
+frame = 5
 
 [node name="Torch13" parent="Scenery" instance=ExtResource( 19 )]
 position = Vector2( 491, 273 )
-frame = 4
+frame = 5
 
 [node name="Torch14" parent="Scenery" instance=ExtResource( 19 )]
 position = Vector2( 588, 54 )
-frame = 3
+frame = 4
 
 [node name="Torch15" parent="Scenery" instance=ExtResource( 19 )]
 position = Vector2( 630, 54 )
-frame = 2
+frame = 3
 
 [node name="Torch3" parent="Scenery" instance=ExtResource( 19 )]
 position = Vector2( -2456, -128 )
-frame = 4
+frame = 5
 
 [node name="Torch4" parent="Scenery" instance=ExtResource( 19 )]
 position = Vector2( -2384, -128 )
-frame = 3
+frame = 4
 
 [node name="Torch5" parent="Scenery" instance=ExtResource( 19 )]
 position = Vector2( -2420, -161 )
-frame = 3
+frame = 4
 
 [node name="Torch6" parent="Scenery" instance=ExtResource( 19 )]
 position = Vector2( 336, 1109 )
-frame = 3
+frame = 4
 
 [node name="Torch7" parent="Scenery" instance=ExtResource( 19 )]
 position = Vector2( 400, 1108 )
-frame = 3
+frame = 4
 
 [node name="Torch8" parent="Scenery" instance=ExtResource( 19 )]
 position = Vector2( 368, 1078 )
-frame = 2
+frame = 3
 
 [node name="Torch9" parent="Scenery" instance=ExtResource( 19 )]
 position = Vector2( 1676, 91 )
-frame = 2
+frame = 3
 
 [node name="Torch10" parent="Scenery" instance=ExtResource( 19 )]
 position = Vector2( 1704, 59 )
-frame = 1
+frame = 2
 
 [node name="Torch11" parent="Scenery" instance=ExtResource( 19 )]
 position = Vector2( 1733, 92 )
-frame = 1
+frame = 2
 
 [node name="Torch2" parent="Scenery" instance=ExtResource( 19 )]
 position = Vector2( -224, -64 )
-frame = 4
+frame = 5
 
 [node name="Boss" parent="." instance=ExtResource( 17 )]
 position = Vector2( 230, -104 )
