@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=2]
+[gd_scene load_steps=35 format=2]
 
 [ext_resource path="res://Player.gd" type="Script" id=1]
 [ext_resource path="res://Hitboxes And Hurtboxes/Hurtbox.tscn" type="PackedScene" id=2]
@@ -31,6 +31,20 @@ tracks/0/keys = {
 "transitions": PoolRealArray( 1, 1, 1, 1, 1, 1 ),
 "update": 1,
 "values": [ 90, 91, 108, 109, 110, 111 ]
+}
+tracks/1/type = "method"
+tracks/1/path = NodePath(".")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0.6 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [  ],
+"method": "death"
+} ]
 }
 
 [sub_resource type="Animation" id=7]
@@ -164,6 +178,8 @@ animation = "Walk"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=33]
 
+[sub_resource type="AnimationNodeStateMachineTransition" id=34]
+
 [sub_resource type="AnimationNodeStateMachine" id=22]
 states/Death/node = SubResource( 28 )
 states/Death/position = Vector2( 292, 235 )
@@ -175,7 +191,7 @@ states/Jump/node = SubResource( 12 )
 states/Jump/position = Vector2( 665, 54 )
 states/Walk/node = SubResource( 14 )
 states/Walk/position = Vector2( 477, 136 )
-transitions = [ "Idle", "Walk", SubResource( 15 ), "Walk", "Idle", SubResource( 16 ), "Walk", "Jump", SubResource( 17 ), "Jump", "Fall", SubResource( 18 ), "Walk", "Fall", SubResource( 21 ), "Idle", "Jump", SubResource( 24 ), "Fall", "Walk", SubResource( 25 ), "Idle", "Death", SubResource( 29 ), "Walk", "Death", SubResource( 30 ), "Fall", "Death", SubResource( 33 ) ]
+transitions = [ "Idle", "Walk", SubResource( 15 ), "Walk", "Idle", SubResource( 16 ), "Walk", "Jump", SubResource( 17 ), "Jump", "Fall", SubResource( 18 ), "Walk", "Fall", SubResource( 21 ), "Idle", "Jump", SubResource( 24 ), "Fall", "Walk", SubResource( 25 ), "Idle", "Death", SubResource( 29 ), "Walk", "Death", SubResource( 30 ), "Fall", "Death", SubResource( 33 ), "Death", "Idle", SubResource( 34 ) ]
 start_node = "Idle"
 graph_offset = Vector2( 19, 3 )
 
@@ -193,7 +209,7 @@ position = Vector2( 0, -24 )
 texture = ExtResource( 6 )
 hframes = 9
 vframes = 13
-frame = 98
+frame = 97
 
 [node name="ShotgunPosition" type="Node2D" parent="PlayerSprite"]
 position = Vector2( -2, 7 )

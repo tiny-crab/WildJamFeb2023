@@ -40,6 +40,10 @@ var damage_received_modifier = 1
 var current_health = INTIAL_HEALTH
 
 var shotgun_has_sight = true
+var shotgun_is_cursed = false
+
+var num_boss_attempts = 5
+var should_lose_attempt = false
 
 onready var player = $PlayerSprite
 onready var animationPlayer = $AnimationPlayer
@@ -55,6 +59,7 @@ signal interacted_with_key(keyNode)
 signal activated_teleporter()
 signal send_player_position(player_position)
 signal paused_game()
+signal game_over()
 
 func _ready():
     grapplingHook.connect("grappling_released", self, "_on_grappling_released")
@@ -208,10 +213,31 @@ func receive_damage(damage_to_receive):
         state = DEATH
         #dirt way to handle it, but easier than figuring out a lerp for now.
         Shotgun.visible = false
+        shotgun_has_sight = false
         animationState.travel("Death")
         #TODO: add teleport method here and move state back to ground
-        
 
+#called when death animation finishes from animation player        
+func death():
+    #In the future if we want this to work add a signal from boss
+    #letting the player know the boss is active and the player should lose attempts
+    if should_lose_attempt and num_boss_attempts > 0:
+        num_boss_attempts -= 1
+    elif num_boss_attempts <= 0:
+        emit_signal("game_over")
+        
+    emit_signal("activated_teleporter")
+    reset()
+    
+    
+func reset():
+    Shotgun.visible = true
+    if not shotgun_is_cursed:
+        shotgun_has_sight = true
+    current_health = INTIAL_HEALTH
+    animationState.travel("Idle")
+        
+    
 # INTERACTIONS
 func _on_InteractHitbox_area_entered(area):
     var node = area.get_owner()
