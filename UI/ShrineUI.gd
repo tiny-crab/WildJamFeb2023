@@ -7,7 +7,7 @@ var selectedCurses = []
 var curseSelectionUIs = []
 var isCurseUI: bool
 
-signal curse_purchased(curse)
+signal curse_purchased(curses)
 
 func _ready():
     SignalBus.add_emitter("curse_purchased", self)
@@ -65,8 +65,8 @@ func _on_CloseButton_pressed():
     hide()
 
 func _on_BuyButton_pressed():
-    displayedCurse = null
-    selectedCurses = []
     activatedShrine.destroy()
     emit_signal("curse_purchased", selectedCurses)
+    displayedCurse = null
+    selectedCurses = []
     hide()

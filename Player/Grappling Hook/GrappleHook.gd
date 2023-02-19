@@ -1,8 +1,11 @@
 extends Node2D
 
 const SPEED = 50
-const MAX_LENGTH = 700
-const GRAPPLE_DURATION = 0.75
+const INITIAL_LENGTH = 700
+const INITIAL_GRAPPLE_DURATION = 0.75
+
+var chain_length = INITIAL_LENGTH
+var grapple_duration = INITIAL_GRAPPLE_DURATION
 
 onready var chain = $ChainSprite
 onready var timer = $GrappleTimer
@@ -17,7 +20,7 @@ signal grappling_released
 
 func _ready():
     timer.connect("timeout", self, "_on_Timer_timeout")
-    timer.wait_time = GRAPPLE_DURATION
+    timer.wait_time = grapple_duration
 
 func shoot(dir):
     direction = dir.normalized()
@@ -39,7 +42,7 @@ func _process(delta):
     chain.position = tip_loc
     chain.region_rect.size.y = tip_loc.length()
     
-    if tip_loc.length() >= MAX_LENGTH:
+    if tip_loc.length() >= chain_length:
         flying = false
     
 func _physics_process(delta):

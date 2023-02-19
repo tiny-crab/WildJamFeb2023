@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource( 1 )
-name = "Jump Charges"
-description = "The air rushes around your body in a lithe dance."
+name = "Damage -"
+description = "Your weapon fizzles and spurts as you pull the trigger."
 value = 4
-isCurse = false
+isCurse = true

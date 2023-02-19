@@ -1,7 +1,7 @@
 extends KinematicBody2D
 
 const INITIAL_HEALTH = 300
-const INTIAL_CHARGE_INCREMENT_TIME = 0.1
+const INTIAL_CHARGE_INCREMENT_TIME = 10
 const INITIAL_SCALE = Vector2(0.1, 0.1)
 const SCALE_INCREMENT = Vector2(0.01, 0.01)
 const INITIAL_DAMAGE_DEALT = 5
@@ -21,6 +21,9 @@ onready var animationTree = $AnimationTree
 onready var animationState = animationTree.get("parameters/playback")
 onready var chargeUpTimer = $ChargeUpTimer
 onready var pursuitAndIdleTimer = $PursuitAndIdleTimer
+onready var collision = $CollisionShape2D
+var current_min_pursuitTime = MIN_PURSUIT_TIME
+var current_max_pursuitTime = MAX_PURSUIT_TIME
 
 onready var boss_teleport_positions = [teleportPositionOne, teleportPositionTwo, teleportPositionThree]
 var current_health = INITIAL_HEALTH
@@ -55,6 +58,7 @@ func _ready():
     chargeUpTimer.connect("timeout", self, "_on_Timer_timeout")
     pursuitAndIdleTimer.connect("timeout", self, "_on_PursuitAndIdleTimer_timeout")
     scale = INITIAL_SCALE
+    collision.disabled = true
     if state == CHARGING:
         animationState.travel("Idle")
         chargeUpTimer.wait_time = current_charge_increment_time
@@ -76,11 +80,6 @@ func _process(delta):
     var player_side = pursuit_position.x - sprite.position.x        
     if (player_side >= 0 and sprite.scale.x < 0) or (player_side < 0 and sprite.scale.x > 0):
         sprite.scale.x *= -1
-            
-func _draw():
-    pass
-    #draw_line(sprite.position, pursuit_position, Color(255, 0, 0 ), 1)
-    #draw_line(sprite.position, (sprite.position + velocity), Color(255, 0, 0), 1)
 
     
 func teleport():
@@ -111,7 +110,6 @@ func wide_attack():
     animationState.travel("WideAttack")
           
 func take_damage(damage_to_receive, knockback):
-    print("taking damage")
     if state != CHARGING:
         current_health -= damage_to_receive
         if current_health <= 0 and state != DEAD:
@@ -123,11 +121,17 @@ func power_up():
     power += 1
     attack_damage += 0.5
     if power >= MAX_POWER:
+        collision.disabled = false
         chargeUpTimer.stop()
         teleport()
         
+func change_pursuit_and_idle_time(min_time, max_time):
+    current_min_pursuitTime = min_time
+    current_max_pursuitTime = max_time
+         
 func awaken():
     state = IDLE
+    collision.disabled = false
     chargeUpTimer.stop()
     
 func choose_behavior():
@@ -140,13 +144,13 @@ func choose_behavior():
         wide_attack()
     elif behavior == 2:
         state = PURSUING
-        var pursuit_time = rng.randi_range(MIN_PURSUIT_TIME, MAX_PURSUIT_TIME)
+        var pursuit_time = rng.randi_range(current_min_pursuitTime, current_max_pursuitTime)
         pursuitAndIdleTimer.wait_time = pursuit_time
         pursuitAndIdleTimer.start()
         print("timer started")
     else:
         state = IDLE
-        var pursuit_time = rng.randi_range(MIN_PURSUIT_TIME, MAX_PURSUIT_TIME)
+        var pursuit_time = rng.randi_range(current_min_pursuitTime, current_max_pursuitTime)
         pursuitAndIdleTimer.wait_time = pursuit_time
         pursuitAndIdleTimer.start()
 

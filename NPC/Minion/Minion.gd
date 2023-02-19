@@ -28,7 +28,7 @@ var state = NORMAL
 var direction = Vector2.RIGHT + Vector2.DOWN
 var velocity = Vector2.ZERO
 
-var max_health = 100
+var max_health = 60
 var current_health = max_health
 
 var attack_damage = INITIAL_DAMAGE_DEALT
