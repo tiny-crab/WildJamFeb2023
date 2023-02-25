@@ -20,10 +20,13 @@ func _ready():
 func _on_Key_pickup(node):
     keysPickedUp += 1
     if (keysPickedUp == 1):
+        SoundPlayer.play_callout(SoundPlayer.CALLOUT1)
         $LockWest.show()
     if (keysPickedUp == 2):
+        SoundPlayer.play_callout(SoundPlayer.CALLOUT2)
         $LockEast.show()
     if (keysPickedUp == 3):
+        SoundPlayer.play_callout(SoundPlayer.CALLOUT3)
         $LockSouth.show()
         
 func _on_Interacted_with_boss(bossNode):
@@ -37,6 +40,7 @@ func _on_Pact_signed():
     pactOffered = false
     
 func _on_Boss_unlocked():
+    SoundPlayer.play_callout(SoundPlayer.CALLOUT4)
     hide()
     
 func _on_Boss_powered_up(powerLevel):

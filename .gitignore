@@ -11,3 +11,10 @@ data_*/
 # Mac OSX
 .DS_Store
 
+# Builds / Assets
+Exports/
+Assets/
+Temp\ Assets/
+Exports.zip
+Assets.zip
+Temp\ Assets.zip

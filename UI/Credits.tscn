@@ -20,21 +20,23 @@ size_flags_vertical = 2
 
 [node name="Label" type="Label" parent="VBoxContainer"]
 margin_right = 184.0
-margin_bottom = 116.0
-text = "Programming and Design -
-Adam de Lorimier Farmer
+margin_bottom = 150.0
+text = "Created by
+
+Adam de Lorimier-Farmer
 Zach Crabtree
 
-Assets - 
+Assets
+
 Penusbmic: The DARK Series
 Kenney"
 align = 1
 valign = 1
 
 [node name="Dismiss" type="Button" parent="VBoxContainer"]
-margin_top = 120.0
+margin_top = 154.0
 margin_right = 184.0
-margin_bottom = 140.0
+margin_bottom = 174.0
 text = "Thanks for playing!"
 
 [connection signal="pressed" from="VBoxContainer/Dismiss" to="." method="_on_Dismiss_pressed"]

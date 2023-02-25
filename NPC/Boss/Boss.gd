@@ -2,7 +2,7 @@ extends KinematicBody2D
 
 const INITIAL_HEALTH = 300
 const INTIAL_CHARGE_INCREMENT_TIME = 10
-const INITIAL_SCALE = Vector2(0.1, 0.1)
+const INITIAL_SCALE = Vector2(0.5, 0.5)
 const SCALE_INCREMENT = Vector2(0.01, 0.01)
 const INITIAL_DAMAGE_DEALT = 5
 const INTIAL_POWER = 1
