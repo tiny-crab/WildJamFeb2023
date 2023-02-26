@@ -7,7 +7,6 @@ func _ready():
     $TutorialsCheckButton.pressed = GlobalOptions.tutorialsEnabled
 
 func _on_VolumeSlider_value_changed(value):
-    SoundPlayer.play_click()
     GlobalOptions.volume = value
 
 func _on_Save_pressed():

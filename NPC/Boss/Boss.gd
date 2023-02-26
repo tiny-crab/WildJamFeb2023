@@ -65,7 +65,6 @@ func _ready():
     SignalBus.add_emitter("pact_offered", self)
     SignalBus.add_emitter("boss_unlocked", self)
     SignalBus.add_listener("boss_unlocked", self, "_on_Boss_unlocked")
-    SignalBus.add_listener("curse_purchased", self, "_on_curse_purchased")
     scale = INITIAL_SCALE
     collision.disabled = true
     if state == CHARGING:
@@ -211,13 +210,3 @@ func _on_PursuitAndIdleTimer_timeout():
 
 func _on_Player_send_player_position(player_position):
     pursuit_position = to_local(player_position + Vector2(0, -12))
-    
-func _on_curse_purchased(curses):
-    for curse in curses:
-        match curse.name:
-            "Hover Jump":
-                change_pursuit_and_idle_time(current_min_pursuitTime * 0.5, current_max_pursuitTime * 0.5)
-            "Double Damage":
-                current_health *= 2
-            "Double Health":
-                power += 10

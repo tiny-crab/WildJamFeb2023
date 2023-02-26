@@ -1,6 +1,6 @@
 extends KinematicBody2D
 
-
+# TODO export these to allow tuning in remote tree view
 const UP = Vector2(0, -1)
 const GRAVITY = 600.0
 const ACCELERATION = 500
@@ -57,10 +57,6 @@ onready var grapplingHook = $GrappleHook
 onready var ShotgunPosition = $PlayerSprite/ShotgunPosition
 onready var Shotgun = $PlayerSprite/ShotgunPosition/Shotgun
 
-signal player_interacted(area)
-signal interacted_with_shrine(shrineNode, currentSap)
-signal interacted_with_key(keyNode)
-signal interacted_with_boss(bossNode)
 signal player_health_changed(newHealth)
 signal activated_teleporter()
 signal send_player_position(player_position)
@@ -69,10 +65,6 @@ signal game_over()
 
 func _ready():
     grapplingHook.connect("grappling_released", self, "_on_grappling_released")
-    SignalBus.add_listener("curse_purchased", self, "_on_curse_purchased")
-    SignalBus.add_emitter("interacted_with_shrine", self)
-    SignalBus.add_emitter("interacted_with_key", self)
-    SignalBus.add_emitter("interacted_with_boss", self)
     SignalBus.add_emitter("activated_teleporter", self)
     SignalBus.add_emitter("player_health_changed", self)
     SignalBus.add_emitter("paused_game", self)
@@ -80,6 +72,8 @@ func _ready():
    
 func _process(delta):
     update()
+    # TODO what do you think about the boss / enemies doing a circle cast to find the player's position within a "sight range"?
+    # I don't know how heavyweight it is to be emitting a signal upon every frame
     emit_signal("send_player_position", position)
     #MOVEMENT
     match state:
@@ -128,20 +122,8 @@ func _process(delta):
     if Input.is_action_just_pressed("attack"):
         Shotgun.shoot()
     
-    #INTERACTIONS
-    if Input.is_action_just_pressed("interact") and interactable != null:
-        print("Interacted with %s" % interactable.name)
-        if (interactable.get_class() == "Shrine"):
-            _on_Interacted_with_Shrine(interactable)
-        elif (interactable.get_class() == "Key"):
-            _on_Interacted_with_Key(interactable)
-        elif (interactable.get_class() == "Boss"):
-            _on_Interacted_with_Boss(interactable)
-        else:
-            push_warning("Attempted to interact with an Interactable without a class")
-    
+    # TODO could remove this action type and just have an option in the pause menu to teleport
     if Input.is_action_just_pressed("reset"):
-        #used for teleportation
         emit_signal("activated_teleporter")
         
     if Input.is_action_just_pressed("pause"):
@@ -246,94 +228,14 @@ func death():
     emit_signal("activated_teleporter")
     reset()
     
-    
 func reset():
     Shotgun.visible = true
     if not shotgun_is_cursed:
         shotgun_has_sight = true
     current_health = INTIAL_HEALTH
     animationState.travel("Idle")
-        
-    
-# INTERACTIONS
-func _on_InteractHitbox_area_entered(area):
-    var node = area.get_owner()
-    interactable = node
-
-func _on_InteractHitbox_area_exited(area):
-    var node = area.get_owner()
-    if (node.name == interactable.name):
-        interactable = null
-
-func _on_Interacted_with_Shrine(node):
-    if (!node.destroyed):
-        emit_signal("interacted_with_shrine", node, current_sap)
-
-func _on_Interacted_with_Key(node):
-    emit_signal("interacted_with_key", node)
-    
-func _on_Interacted_with_Boss(node):
-    emit_signal("interacted_with_boss", node)
-
-# CURSES
-
-func _on_curse_purchased(curses):
-    var subtractExtraCost = false
-    for curse in curses:
-        print("Purchased %s" % curse.name)
-        if curse.isCurse:
-            current_sap += curse.value
-        else:
-            subtractExtraCost = true
-            current_sap -= curse.value
-        match curse.name:
-            "Damage +":
-                var damage_increase = Shotgun.damage * 0.5
-                Shotgun.alter_damage(damage_increase)
-            "Damage -":
-                var damage_decrease = Shotgun.damage * -0.5
-                Shotgun.alter_damage(damage_decrease)
-            "Jump Charges":
-                max_jump_charges += 1
-            "Fall Damage":
-                #Maybe add fall damage someday
-                pass
-            "Jump Height +":
-                jump_velocity = jump_velocity * 1.1
-            "Jump Height -":
-                jump_velocity = clamp(jump_velocity - (jump_velocity * .1), -10, -1000000000000)
-            "Move Speed +":
-                modified_speed = modified_speed * 1.1
-            "Move Speed -":
-                modified_speed = clamp(modified_speed - (modified_speed * -1), 20, 1000000000000)
-            "Grapple Charge +":
-                grapple_charges += 1
-            "Grapple Charge -":
-                grapple_charges = clamp(grapple_charges - 1, 1, 10000000000)
-            "Grapple Length +":
-                grapplingHook.chain_length = grapplingHook.chain_length * 1.1
-            "Grapple Length -":
-                grapplingHook.chain_length = clamp(grapplingHook.chain_length - (grapplingHook.chain_length *.1), 100, 1000000000)
-            "Grapple Time +":
-                grapplingHook.grapple_duration = grapplingHook.grapple_duration * 1.1
-            "Grapple Time -":
-                grapplingHook.grapple_duration = clamp(grapplingHook.grapple_duration - (grapplingHook.grapple_duration *.1), 0.25, 1000000000)
-            "Lose LaserSight":
-                shotgun_has_sight = false
-            #PACTS BEGIN
-            "Hover Jump":
-                hover_jump_on = true
-            "Double Damage":
-                Shotgun.damage = Shotgun.damage * 2
-            "Double Health":
-                current_health = current_health *2
-    if subtractExtraCost:
-        current_sap -= curses.size()-1
-    else:
-        current_sap += curses.size()-1
 
 func _on_Hurtbox_area_entered(area):
-    #print("hurtbox hit")
     var bodies = area.get_overlapping_bodies()
     for body in bodies:
         if body.get_class() == "Minion" or body.get_class() == "Boss":

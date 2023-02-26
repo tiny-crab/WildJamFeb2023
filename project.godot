@@ -9,18 +9,12 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Resource",
-"class": "Curse",
-"language": "GDScript",
-"path": "res://Resources/Curse.gd"
-}, {
 "base": "Node2D",
 "class": "Shrine",
 "language": "GDScript",
 "path": "res://Props/Shrine.gd"
 } ]
 _global_script_class_icons={
-"Curse": "",
 "Shrine": ""
 }
 
@@ -28,13 +22,15 @@ _global_script_class_icons={
 
 config/name="WildJamFeb2023"
 run/main_scene="res://UI/MainMenu.tscn"
-config/icon="res://icon.png"
+
+[audio]
+
+default_bus_layout=""
 
 [autoload]
 
 SignalBus="*res://Globals/SignalBus.tscn"
-GlobalOptions="*res://GlobalOptions.gd"
-GlobalCurses="*res://GlobalCurses.gd"
+GlobalOptions="*res://Globals/GlobalOptions.gd"
 SoundPlayer="*res://Systems/SoundPlayer.tscn"
 
 [display]
