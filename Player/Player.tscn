@@ -1,6 +1,6 @@
 [gd_scene load_steps=35 format=2]
 
-[ext_resource path="res://Player.gd" type="Script" id=1]
+[ext_resource path="res://Player/Player.gd" type="Script" id=1]
 [ext_resource path="res://Hitboxes And Hurtboxes/Hurtbox.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Systems/InteractHitbox.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Player/Grappling Hook/GrappleHook.tscn" type="PackedScene" id=4]

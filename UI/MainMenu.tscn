@@ -51,23 +51,27 @@ region_rect = Rect2( 16, 368, 80, 64 )
 
 [node name="Torch" parent="TileMap" instance=ExtResource( 6 )]
 position = Vector2( 465, 280 )
-frame = 1
+frame = 2
 
 [node name="Torch2" parent="TileMap" instance=ExtResource( 6 )]
 position = Vector2( 513, 279 )
+frame = 1
 
 [node name="Torch3" parent="TileMap" instance=ExtResource( 6 )]
 position = Vector2( 489, 262 )
+frame = 1
 
 [node name="Torch4" parent="TileMap" instance=ExtResource( 6 )]
 position = Vector2( 543, 392 )
-frame = 1
+frame = 2
 
 [node name="Torch5" parent="TileMap" instance=ExtResource( 6 )]
 position = Vector2( 593, 394 )
+frame = 1
 
 [node name="Torch6" parent="TileMap" instance=ExtResource( 6 )]
 position = Vector2( 569, 414 )
+frame = 1
 
 [node name="RedRoot" parent="TileMap" instance=ExtResource( 8 )]
 position = Vector2( 734, 326 )
@@ -79,7 +83,7 @@ position = Vector2( 756, 406 )
 position = Vector2( 424, 497 )
 
 [node name="AnimatedSprite" parent="TileMap/Shrine" index="0"]
-frame = 1
+frame = 12
 playing = true
 
 [node name="RedRoot2" parent="TileMap" instance=ExtResource( 8 )]
