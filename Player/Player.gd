@@ -36,6 +36,7 @@ var grapple_charges = max_grapple_charges
 var max_air_jump_charges = 1
 var air_jump_charges = max_air_jump_charges
 var jump_velocity = INITIAL_JUMP_VELOCITY
+var was_on_floor = false
 var interactable = null
 
 var damage_received_modifier = 1
@@ -58,6 +59,7 @@ onready var animationState = animationTree.get("parameters/playback")
 onready var grapplingHook = $GrappleHook
 onready var ShotgunPosition = $PlayerSprite/ShotgunPosition
 onready var Shotgun = $PlayerSprite/ShotgunPosition/Shotgun
+onready var coyoteTime = $CoyoteTime
 
 signal player_health_changed(newHealth)
 signal activated_teleporter()
@@ -91,9 +93,15 @@ func _process(delta):
             move_grapple(delta)
             if STATE_DEBUG:
                 print("Grapple")
+
+    # if player just started falling off a platform
+    if was_on_floor and !is_on_floor():
+        coyoteTime.start()
+
+    was_on_floor = is_on_floor()
             
     if Input.is_action_just_pressed("jump") and (state == GROUND or air_jump_charges >= 1):
-        if is_on_floor():
+        if can_ground_jump():
             # player gets a single jump from off the ground
             velocity.y = jump_velocity
             state = JUMP
@@ -147,7 +155,8 @@ func _on_grappling_released():
 func _physics_process(delta):
     if state == JUMP or state == GROUND:
         if not hover_jump_on:
-            var gravity = JUMP_GRAVITY if velocity.y < 0 else FALL_GRAVITY
+            # if coyote time is still active, the fall should be slower
+            var gravity = JUMP_GRAVITY if velocity.y < 0 or not coyoteTime.is_stopped() else FALL_GRAVITY
             velocity.y += delta * gravity
         else:
             velocity.y += delta * HOVER_GRAVITY
@@ -167,9 +176,6 @@ func move_ground(delta):
         animationState.travel("Idle")
     else:
         animationState.travel("Walk")
-
-    if not is_on_floor():
-        state = JUMP
 
 func move_jump(delta):
     var input_vector = Vector2.ZERO
@@ -202,7 +208,13 @@ func play_in_air_animations():
         animationState.travel("Jump")
     else:
         animationState.travel("Fall")
-    
+
+func can_ground_jump():
+    if is_on_floor() or not coyoteTime.is_stopped():
+        return true
+    else:
+        return false
+
 #WEAPONS
 
 func aim_shotgun():
