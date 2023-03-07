@@ -1,8 +1,8 @@
 extends Node2D
 
-const SPEED = 50
+const SPEED = 20
 const INITIAL_LENGTH = 700
-const INITIAL_GRAPPLE_DURATION = 0.75
+const INITIAL_GRAPPLE_DURATION = 1.25
 
 var chain_length = INITIAL_LENGTH
 var grapple_duration = INITIAL_GRAPPLE_DURATION
