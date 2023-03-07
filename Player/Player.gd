@@ -2,7 +2,9 @@ extends KinematicBody2D
 
 # TODO export these to allow tuning in remote tree view
 const UP = Vector2(0, -1)
-const GRAVITY = 600.0
+const JUMP_GRAVITY = 600.0
+const FALL_GRAVITY = 1200.0
+const HOVER_GRAVITY = JUMP_GRAVITY * 0.1
 const ACCELERATION = 500
 const INITIAL_SPEED = 120
 onready var modified_speed = INITIAL_SPEED
@@ -97,7 +99,7 @@ func _process(delta):
         state = JUMP
     
     if Input.is_action_pressed("hover_down") and state == JUMP and hover_jump_on:
-        velocity.y += GRAVITY * 0.8 * delta
+        velocity.y += JUMP_GRAVITY * 0.8 * delta
         
     if Input.is_action_just_pressed("grapple") and grapple_charges >= 1:
         grapplingHook.shoot(get_local_mouse_position())
@@ -136,9 +138,10 @@ func _on_grappling_released():
 func _physics_process(delta):
     if state == JUMP or state == GROUND:
         if not hover_jump_on:
-            velocity.y += delta * GRAVITY
+            var gravity = JUMP_GRAVITY if velocity.y < 0 else FALL_GRAVITY
+            velocity.y += delta * gravity
         else:
-            velocity.y += delta * GRAVITY * 0.1
+            velocity.y += delta * HOVER_GRAVITY
     
 func move_ground(delta):
     var input_vector = Vector2.ZERO
