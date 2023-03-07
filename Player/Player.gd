@@ -95,8 +95,11 @@ func _process(delta):
     if Input.is_action_just_pressed("jump") and (state == GROUND or jump_charges >= 1):
         jump_charges -= 1
         velocity.y = jump_velocity
-        animationState.travel("Jump")
         state = JUMP
+
+    if Input.is_action_just_released("jump") and (state == JUMP):
+        # just ramp down on upward velocity quickly, so that player transitions into fall gravity more quickly
+        velocity.y = velocity.y / 5
     
     if Input.is_action_pressed("hover_down") and state == JUMP and hover_jump_on:
         velocity.y += JUMP_GRAVITY * 0.8 * delta
