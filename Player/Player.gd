@@ -33,8 +33,8 @@ var hook_velocity = Vector2.ZERO
 # not a const because we may want to change this during gameplay
 var max_grapple_charges = 3
 var grapple_charges = max_grapple_charges
-var max_jump_charges = 1
-var jump_charges = max_jump_charges
+var max_air_jump_charges = 1
+var air_jump_charges = max_air_jump_charges
 var jump_velocity = INITIAL_JUMP_VELOCITY
 var interactable = null
 
@@ -92,10 +92,16 @@ func _process(delta):
             if STATE_DEBUG:
                 print("Grapple")
             
-    if Input.is_action_just_pressed("jump") and (state == GROUND or jump_charges >= 1):
-        jump_charges -= 1
-        velocity.y = jump_velocity
-        state = JUMP
+    if Input.is_action_just_pressed("jump") and (state == GROUND or air_jump_charges >= 1):
+        if is_on_floor():
+            # player gets a single jump from off the ground
+            velocity.y = jump_velocity
+            state = JUMP
+        elif not is_on_floor() and air_jump_charges > 0:
+            # player gets to jump air_jump_charges times while in the air
+            air_jump_charges -= 1
+            velocity.y = jump_velocity
+            state = JUMP
 
     if Input.is_action_just_released("jump") and (state == JUMP):
         # just ramp down on upward velocity quickly, so that player transitions into fall gravity more quickly
@@ -116,7 +122,7 @@ func _process(delta):
         state = JUMP    
                 
     velocity = move_and_slide(velocity, UP)
-    if velocity. x > 0:
+    if velocity.x > 0:
         player.set_scale(Vector2(1, 1))
     elif velocity.x < 0:
         player.set_scale(Vector2(-1, 1))
@@ -155,13 +161,16 @@ func move_ground(delta):
     else:
         velocity.x = 0
         velocity = velocity.move_toward(velocity, FRICTION * delta)
-    
+
     #Animation
     if velocity.x == 0:
         animationState.travel("Idle")
     else:
         animationState.travel("Walk")
-    
+
+    if not is_on_floor():
+        state = JUMP
+
 func move_jump(delta):
     var input_vector = Vector2.ZERO
     input_vector.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
@@ -171,7 +180,7 @@ func move_jump(delta):
     
     if is_on_floor() and velocity.y >= 0:
         grapple_charges = max_grapple_charges
-        jump_charges = max_jump_charges
+        air_jump_charges = max_air_jump_charges
         state = GROUND
     play_in_air_animations()
         
