@@ -15,7 +15,7 @@ var damage = BASE_DAMAGE
 func _ready():
     #ensure shotgun starts at frame 0
     shotgunSprite.frame = 0
-    
+
 func alter_damage(damage_to_add):
     damage = clamp(damage + damage_to_add, MIN_DAMAGE, 10000000000000)
 

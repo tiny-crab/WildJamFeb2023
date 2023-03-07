@@ -205,14 +205,16 @@ __meta__ = {
 }
 
 [node name="PlayerSprite" type="Sprite" parent="."]
-position = Vector2( 0, -24 )
+position = Vector2( 0, 4 )
 texture = ExtResource( 6 )
+centered = false
+offset = Vector2( -24, -52 )
 hframes = 9
 vframes = 13
 frame = 97
 
 [node name="ShotgunPosition" type="Node2D" parent="PlayerSprite"]
-position = Vector2( -2, 7 )
+position = Vector2( 0, -20 )
 __meta__ = {
 "_edit_group_": true
 }
@@ -221,7 +223,6 @@ __meta__ = {
 z_index = 1
 
 [node name="Hurtbox" parent="PlayerSprite" instance=ExtResource( 2 )]
-position = Vector2( 0, 24 )
 
 [node name="CollisionShape2D" parent="PlayerSprite/Hurtbox" index="0"]
 position = Vector2( 0, -13 )
@@ -268,6 +269,14 @@ parameters/playback = SubResource( 23 )
 
 [node name="CoyoteTime" type="Timer" parent="."]
 wait_time = 0.15
+one_shot = true
+
+[node name="SqueezeTimer" type="Timer" parent="."]
+wait_time = 0.1
+one_shot = true
+
+[node name="SquashTimer" type="Timer" parent="."]
+wait_time = 0.1
 one_shot = true
 
 [connection signal="area_entered" from="PlayerSprite/Hurtbox" to="." method="_on_Hurtbox_area_entered"]
