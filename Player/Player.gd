@@ -2,7 +2,9 @@ extends KinematicBody2D
 
 # TODO export these to allow tuning in remote tree view
 const UP = Vector2(0, -1)
-const GRAVITY = 600.0
+const JUMP_GRAVITY = 600.0
+const FALL_GRAVITY = 1200.0
+const HOVER_GRAVITY = JUMP_GRAVITY * 0.1
 const ACCELERATION = 500
 const INITIAL_SPEED = 120
 onready var modified_speed = INITIAL_SPEED
@@ -14,6 +16,10 @@ const SHOTGUN_OFFSET = 20
 const SHOTGUN_CENTER_OFFSET = Vector2(0, -12)
 const INTIAL_HEALTH = 100
 #const SHOTGUN_POSITION_RIGHT = Vector2(-2, -17)
+
+const AIR_SCALE_LERP_VELOCITY = 8
+const GROUND_SCALE_LERP_VELOCITY = 10
+var targetScale = Vector2(1, 1)
 
 #controls logs indicating what state the player is in
 const STATE_DEBUG = false
@@ -27,13 +33,15 @@ enum {
 
 var state = JUMP
 var velocity = Vector2.ZERO
+var facingRight = true
 var hook_velocity = Vector2.ZERO
 # not a const because we may want to change this during gameplay
 var max_grapple_charges = 3
 var grapple_charges = max_grapple_charges
-var max_jump_charges = 1
-var jump_charges = max_jump_charges
+var max_air_jump_charges = 1
+var air_jump_charges = max_air_jump_charges
 var jump_velocity = INITIAL_JUMP_VELOCITY
+var was_on_floor = false
 var interactable = null
 
 var damage_received_modifier = 1
@@ -56,6 +64,7 @@ onready var animationState = animationTree.get("parameters/playback")
 onready var grapplingHook = $GrappleHook
 onready var ShotgunPosition = $PlayerSprite/ShotgunPosition
 onready var Shotgun = $PlayerSprite/ShotgunPosition/Shotgun
+onready var coyoteTime = $CoyoteTime
 
 signal player_health_changed(newHealth)
 signal activated_teleporter()
@@ -69,7 +78,7 @@ func _ready():
     SignalBus.add_emitter("player_health_changed", self)
     SignalBus.add_emitter("paused_game", self)
     animationTree.active = true
-   
+
 func _process(delta):
     update()
     # TODO what do you think about the boss / enemies doing a circle cast to find the player's position within a "sight range"?
@@ -89,57 +98,95 @@ func _process(delta):
             move_grapple(delta)
             if STATE_DEBUG:
                 print("Grapple")
-            
-    if Input.is_action_just_pressed("jump") and (state == GROUND or jump_charges >= 1):
-        jump_charges -= 1
-        velocity.y = jump_velocity
-        animationState.travel("Jump")
-        state = JUMP
-    
+
+    # if player just started falling off a platform
+    if was_on_floor and !is_on_floor():
+        coyoteTime.start()
+
+    # if player just hit the ground
+    if !was_on_floor and is_on_floor():
+        targetScale = Vector2(1.2, 0.7)
+        $SquashTimer.start()
+
+    was_on_floor = is_on_floor()
+
+    if $SqueezeTimer.is_stopped() and $SquashTimer.is_stopped():
+        targetScale = Vector2(1, 1)
+
+    var lerpVelocity = GROUND_SCALE_LERP_VELOCITY if is_on_floor() else AIR_SCALE_LERP_VELOCITY
+    player.scale.x = lerp(player.scale.x, targetScale.x if facingRight else -targetScale.x, lerpVelocity * delta)
+    player.scale.y = lerp(player.scale.y, targetScale.y, lerpVelocity * delta)
+
+    if Input.is_action_just_pressed("jump") and (state == GROUND or air_jump_charges >= 1):
+        targetScale = Vector2(0.8, 1.1)
+        $SqueezeTimer.start()
+        if can_ground_jump():
+            # player gets a single jump from off the ground
+            velocity.y = jump_velocity
+            state = JUMP
+        elif not is_on_floor() and air_jump_charges > 0:
+            # player gets to jump air_jump_charges times while in the air
+            air_jump_charges -= 1
+            velocity.y = jump_velocity
+            state = JUMP
+
+    if Input.is_action_just_released("jump") and (state == JUMP):
+        # just ramp down on upward velocity quickly, so that player transitions into fall gravity more quickly
+        velocity.y = velocity.y / 5
+
     if Input.is_action_pressed("hover_down") and state == JUMP and hover_jump_on:
-        velocity.y += GRAVITY * 0.8 * delta
-        
+        velocity.y += JUMP_GRAVITY * 0.8 * delta
+
     if Input.is_action_just_pressed("grapple") and grapple_charges >= 1:
         grapplingHook.shoot(get_local_mouse_position())
         grapple_charges -= 1
-        
+
     if grapplingHook.hooked:
         state = GRAPPLE
-        
+
     if Input.is_action_just_released("grapple"):
         grapplingHook.release()
-        state = JUMP    
-                
+        state = JUMP
+
     velocity = move_and_slide(velocity, UP)
-    if velocity. x > 0:
-        player.set_scale(Vector2(1, 1))
+    if velocity.x > 0:
+        if not facingRight:
+            # immediately force player sprite to flip if changing direction
+            player.scale.x *= -1
+        facingRight = true
     elif velocity.x < 0:
-        player.set_scale(Vector2(-1, 1))
-    
+        if facingRight:
+            # immediately force player sprite to flip if changing direction
+            player.scale.x *= -1
+        facingRight = false
+
+
     #WEAPONS
     aim_shotgun()
-    
+
     if Input.is_action_just_pressed("attack"):
         Shotgun.shoot()
-    
+
     # TODO could remove this action type and just have an option in the pause menu to teleport
     if Input.is_action_just_pressed("reset"):
         emit_signal("activated_teleporter")
-        
+
     if Input.is_action_just_pressed("pause"):
         emit_signal("paused_game")
-           
+
 func _on_grappling_released():
     print("grappling released")
     state = JUMP
-    
+
 func _physics_process(delta):
     if state == JUMP or state == GROUND:
         if not hover_jump_on:
-            velocity.y += delta * GRAVITY
+            # if coyote time is still active, the fall should be slower
+            var gravity = JUMP_GRAVITY if velocity.y < 0 or not coyoteTime.is_stopped() else FALL_GRAVITY
+            velocity.y += delta * gravity
         else:
-            velocity.y += delta * GRAVITY * 0.1
-    
+            velocity.y += delta * HOVER_GRAVITY
+
 func move_ground(delta):
     var input_vector = Vector2.ZERO
     input_vector.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
@@ -149,58 +196,64 @@ func move_ground(delta):
     else:
         velocity.x = 0
         velocity = velocity.move_toward(velocity, FRICTION * delta)
-    
+
     #Animation
     if velocity.x == 0:
         animationState.travel("Idle")
     else:
         animationState.travel("Walk")
-    
+
 func move_jump(delta):
     var input_vector = Vector2.ZERO
     input_vector.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
     input_vector = input_vector.normalized()
     if input_vector != Vector2.ZERO:
         velocity.x = velocity.move_toward(input_vector * modified_speed, ACCELERATION * delta).x
-    
+
     if is_on_floor() and velocity.y >= 0:
         grapple_charges = max_grapple_charges
-        jump_charges = max_jump_charges
+        air_jump_charges = max_air_jump_charges
         state = GROUND
     play_in_air_animations()
-        
+
 func move_grapple(delta):
     var input_vector = Vector2.ZERO
     input_vector.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
     input_vector = input_vector.normalized()
-    
+
     hook_velocity = to_local(grapplingHook.tip).normalized() * CHAIN_PULL * delta
     hook_velocity.x *= 5.65
     if sign(input_vector.x) != sign(hook_velocity.x):
         hook_velocity.x *= 0.7
     velocity += hook_velocity
     play_in_air_animations()
-    
+
 func play_in_air_animations():
     #Animation
     if velocity.y < 0:
         animationState.travel("Jump")
     else:
         animationState.travel("Fall")
-    
+
+func can_ground_jump():
+    if is_on_floor() or not coyoteTime.is_stopped():
+        return true
+    else:
+        return false
+
 #WEAPONS
 
 func aim_shotgun():
     #Aiming
     var cursor_position = get_local_mouse_position().normalized() * SHOTGUN_OFFSET
     var look_at_position = get_local_mouse_position().normalized() * SHOTGUN_OFFSET * 10
-    
+
     ShotgunPosition.look_at(to_global(look_at_position))
-    
-func _draw():   
+
+func _draw():
     if shotgun_has_sight:
         var look_at_position = get_local_mouse_position().normalized() * SHOTGUN_OFFSET * 10
-        var sight_begin_position = ShotgunPosition.position + Vector2(0, -24)
+        var sight_begin_position = ShotgunPosition.position + Vector2(0, 4)
         draw_line(sight_begin_position, look_at_position, Color(255, 0, 0), 1)
 
 
@@ -216,7 +269,7 @@ func receive_damage(damage_to_receive):
         #TODO: add teleport method here and move state back to ground
     emit_signal("player_health_changed", current_health)
 
-#called when death animation finishes from animation player        
+#called when death animation finishes from animation player
 func death():
     #In the future if we want this to work add a signal from boss
     #letting the player know the boss is active and the player should lose attempts
@@ -224,10 +277,10 @@ func death():
         num_boss_attempts -= 1
     elif num_boss_attempts <= 0:
         emit_signal("game_over")
-        
+
     emit_signal("activated_teleporter")
     reset()
-    
+
 func reset():
     Shotgun.visible = true
     if not shotgun_is_cursed:
