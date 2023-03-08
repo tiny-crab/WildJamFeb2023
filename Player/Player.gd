@@ -9,7 +9,7 @@ onready var modified_speed = INITIAL_SPEED
 const TERMINAL_SPEED = 120
 const FRICTION = 800
 const INITIAL_JUMP_VELOCITY = -200
-const CHAIN_PULL = 105
+const CHAIN_PULL = 400
 const SHOTGUN_OFFSET = 20
 const SHOTGUN_CENTER_OFFSET = Vector2(0, -12)
 const INTIAL_HEALTH = 100
@@ -48,6 +48,8 @@ var num_boss_attempts = 5
 var should_lose_attempt = false
 
 var hover_jump_on = false
+
+var should_show_trajectory_debug = true
 
 onready var player = $PlayerSprite
 onready var animationPlayer = $AnimationPlayer
@@ -170,15 +172,22 @@ func move_jump(delta):
     play_in_air_animations()
         
 func move_grapple(delta):
+    #TODO better name and move up to other consts
+    var DOWNWARD_VELOCITY_LIMIT = 250
     var input_vector = Vector2.ZERO
     input_vector.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
     input_vector = input_vector.normalized()
     
-    hook_velocity = to_local(grapplingHook.tip).normalized() * CHAIN_PULL * delta
-    hook_velocity.x *= 5.65
-    if sign(input_vector.x) != sign(hook_velocity.x):
-        hook_velocity.x *= 0.7
-    velocity += hook_velocity
+    hook_velocity = Vector2.ZERO
+    if velocity.y >= DOWNWARD_VELOCITY_LIMIT:
+        print("using enhanced grapple")
+        hook_velocity = to_local(grapplingHook.tip).normalized() * CHAIN_PULL * delta * 35
+    else:
+        hook_velocity = to_local(grapplingHook.tip).normalized() * CHAIN_PULL * delta
+    #hook_velocity.x *= 5.65
+    #if sign(input_vector.x) != sign(hook_velocity.x):
+        #hook_velocity.x *= 0.7
+    velocity += hook_velocity + (input_vector * modified_speed * delta)
     play_in_air_animations()
     
 func play_in_air_animations():
@@ -198,6 +207,13 @@ func aim_shotgun():
     ShotgunPosition.look_at(to_global(look_at_position))
     
 func _draw():   
+    var grapple_position = to_local(grapplingHook.tip)
+    var grapple_vector = (to_local(position) + grapple_position).normalized() * 100
+    if should_show_trajectory_debug:
+        draw_circle(grapple_vector + to_local(position), 5, Color(0, 255, 0))
+        draw_line(Vector2.ZERO, velocity, Color(155, 155, 0), 1)
+        
+    
     if shotgun_has_sight:
         var look_at_position = get_local_mouse_position().normalized() * SHOTGUN_OFFSET * 10
         var sight_begin_position = ShotgunPosition.position + Vector2(0, -24)
