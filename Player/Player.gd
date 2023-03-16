@@ -34,6 +34,7 @@ enum {
 
 var state = JUMP
 var velocity = Vector2.ZERO
+var lastFrameVelocity = Vector2.ZERO
 var facingRight = true
 var hook_velocity = Vector2.ZERO
 # not a const because we may want to change this during gameplay
@@ -66,6 +67,8 @@ onready var grapplingHook = $GrappleHook
 onready var ShotgunPosition = $PlayerSprite/ShotgunPosition
 onready var Shotgun = $PlayerSprite/ShotgunPosition/Shotgun
 onready var coyoteTime = $CoyoteTime
+onready var landParticles = $LandParticles
+onready var walkParticles = $WalkParticles
 
 signal player_health_changed(newHealth)
 signal activated_teleporter()
@@ -108,6 +111,15 @@ func _process(delta):
     if !was_on_floor and is_on_floor():
         targetScale = Vector2(1.2, 0.7)
         $SquashTimer.start()
+        if lastFrameVelocity.y > 250:
+            landParticles.restart()
+
+    lastFrameVelocity = velocity
+
+    if is_on_floor() and abs(velocity.x) > 0:
+        walkParticles.emitting = true
+    else:
+        walkParticles.emitting = false
 
     was_on_floor = is_on_floor()
 
@@ -160,7 +172,6 @@ func _process(delta):
             # immediately force player sprite to flip if changing direction
             player.scale.x *= -1
         facingRight = false
-
 
     #WEAPONS
     aim_shotgun()
