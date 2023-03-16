@@ -4,6 +4,7 @@ extends KinematicBody2D
 const UP = Vector2(0, -1)
 const JUMP_GRAVITY = 600.0
 const FALL_GRAVITY = 900.0
+const HANGTIME_GRAVITY = 200.0
 const HOVER_GRAVITY = JUMP_GRAVITY * 0.1
 const ACCELERATION = 500
 const INITIAL_SPEED = 120
@@ -182,7 +183,12 @@ func _physics_process(delta):
     if state == JUMP or state == GROUND:
         if not hover_jump_on:
             # if coyote time is still active, the fall should be slower
-            var gravity = JUMP_GRAVITY if velocity.y < 0 or not coyoteTime.is_stopped() else FALL_GRAVITY
+            var gravity = FALL_GRAVITY
+            if velocity.y < 0 or not coyoteTime.is_stopped():
+                gravity = JUMP_GRAVITY
+            elif velocity.y > 0 and velocity.y < 10 and Input.is_action_pressed("jump"):
+                gravity = HANGTIME_GRAVITY
+
             velocity.y += delta * gravity
         else:
             velocity.y += delta * HOVER_GRAVITY
