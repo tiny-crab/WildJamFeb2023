@@ -1,8 +1,8 @@
 extends Node2D
 
-const SPEED = 50
+const SPEED = 20
 const INITIAL_LENGTH = 700
-const INITIAL_GRAPPLE_DURATION = 0.75
+const INITIAL_GRAPPLE_DURATION = 5.0#1.25
 
 var chain_length = INITIAL_LENGTH
 var grapple_duration = INITIAL_GRAPPLE_DURATION
@@ -16,7 +16,7 @@ var tip = Vector2.ZERO
 var flying = false
 var hooked = false
 
-signal grappling_released
+signal grappling_released(tip_position)
 
 func _ready():
     timer.connect("timeout", self, "_on_Timer_timeout")
@@ -28,6 +28,7 @@ func shoot(dir):
     tip = self.global_position
     
 func release():
+    emit_signal("grappling_released", tip)
     flying = false
     hooked = false
     
@@ -55,6 +56,6 @@ func _physics_process(delta):
     tip = $Hook.global_position
     
 func _on_Timer_timeout():
-    emit_signal("grappling_released")
+    emit_signal("grappling_released", tip)
     release()
     timer.stop()
