@@ -3,7 +3,7 @@ extends KinematicBody2D
 # TODO export these to allow tuning in remote tree view
 const UP = Vector2(0, -1)
 const JUMP_GRAVITY = 600.0
-const FALL_GRAVITY = 1200.0
+const FALL_GRAVITY = 900.0
 const HOVER_GRAVITY = JUMP_GRAVITY * 0.1
 const ACCELERATION = 500
 const INITIAL_SPEED = 120
