@@ -116,11 +116,6 @@ func _process(delta):
 
     lastFrameVelocity = velocity
 
-    if is_on_floor() and abs(velocity.x) > 0:
-        walkParticles.emitting = true
-    else:
-        walkParticles.emitting = false
-
     was_on_floor = is_on_floor()
 
     if $SqueezeTimer.is_stopped() and $SquashTimer.is_stopped():
