@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=2]
+[gd_scene load_steps=42 format=2]
 
 [ext_resource path="res://Player/Player.gd" type="Script" id=1]
 [ext_resource path="res://Hitboxes And Hurtboxes/Hurtbox.tscn" type="PackedScene" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://Player/Grappling Hook/GrappleHook.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Player/Weapons/Shotgun.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Assets/19 - DARK - Gunslinger/Gunslinger/Gunslinger 48x48 Sprite Sheet no weapons for sprite stacking.png" type="Texture" id=6]
+[ext_resource path="res://Player/PlayerSprite.gd" type="Script" id=7]
 
 [sub_resource type="RectangleShape2D" id=26]
 extents = Vector2( 3.5, 12.5 )
@@ -265,7 +266,8 @@ centered = false
 offset = Vector2( -24, -52 )
 hframes = 9
 vframes = 13
-frame = 97
+frame = 15
+script = ExtResource( 7 )
 
 [node name="ShotgunPosition" type="Node2D" parent="PlayerSprite"]
 position = Vector2( 0, -20 )
@@ -281,6 +283,14 @@ z_index = 1
 [node name="CollisionShape2D" parent="PlayerSprite/Hurtbox" index="0"]
 position = Vector2( 0, -13 )
 shape = SubResource( 26 )
+
+[node name="SqueezeTimer" type="Timer" parent="PlayerSprite"]
+wait_time = 0.1
+one_shot = true
+
+[node name="SquashTimer" type="Timer" parent="PlayerSprite"]
+wait_time = 0.1
+one_shot = true
 
 [node name="GrappleHook" parent="." instance=ExtResource( 4 )]
 position = Vector2( 0, -16 )
@@ -325,14 +335,6 @@ parameters/playback = SubResource( 23 )
 wait_time = 0.15
 one_shot = true
 
-[node name="SqueezeTimer" type="Timer" parent="."]
-wait_time = 0.1
-one_shot = true
-
-[node name="SquashTimer" type="Timer" parent="."]
-wait_time = 0.1
-one_shot = true
-
 [node name="LandParticles" type="Particles2D" parent="."]
 emitting = false
 amount = 16
@@ -350,6 +352,10 @@ randomness = 0.5
 local_coords = false
 process_material = SubResource( 38 )
 
+[connection signal="on_direction_change" from="." to="PlayerSprite" method="_on_Player_on_direction_change"]
+[connection signal="on_floor_status_change" from="." to="PlayerSprite" method="_on_Player_on_floor_status_change"]
+[connection signal="on_jump" from="." to="PlayerSprite" method="_on_Player_on_jump"]
+[connection signal="on_land" from="." to="PlayerSprite" method="_on_Player_on_land"]
 [connection signal="area_entered" from="PlayerSprite/Hurtbox" to="." method="_on_Hurtbox_area_entered"]
 [connection signal="area_entered" from="InteractHitbox" to="." method="_on_InteractHitbox_area_entered"]
 [connection signal="area_exited" from="InteractHitbox" to="." method="_on_InteractHitbox_area_exited"]

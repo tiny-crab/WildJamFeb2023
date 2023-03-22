@@ -18,10 +18,6 @@ const SHOTGUN_CENTER_OFFSET = Vector2(0, -12)
 const INTIAL_HEALTH = 100
 #const SHOTGUN_POSITION_RIGHT = Vector2(-2, -17)
 
-const AIR_SCALE_LERP_VELOCITY = 8
-const GROUND_SCALE_LERP_VELOCITY = 10
-var targetScale = Vector2(1, 1)
-
 #controls logs indicating what state the player is in
 const STATE_DEBUG = false
 
@@ -59,7 +55,6 @@ var should_lose_attempt = false
 
 var hover_jump_on = false
 
-onready var player = $PlayerSprite
 onready var animationPlayer = $AnimationPlayer
 onready var animationTree = $AnimationTree
 onready var animationState = animationTree.get("parameters/playback")
@@ -75,6 +70,11 @@ signal activated_teleporter()
 signal send_player_position(player_position)
 signal paused_game()
 signal game_over()
+
+signal on_land(velocity)
+signal on_jump()
+signal on_direction_change(facingRight)
+signal on_floor_status_change(isOnFloor)
 
 func _ready():
     grapplingHook.connect("grappling_released", self, "_on_grappling_released")
@@ -105,12 +105,13 @@ func _process(delta):
 
     # if player just started falling off a platform
     if was_on_floor and !is_on_floor():
+        emit_signal("on_floor_status_change", false)
         coyoteTime.start()
 
     # if player just hit the ground
     if !was_on_floor and is_on_floor():
-        targetScale = Vector2(1.2, 0.7)
-        $SquashTimer.start()
+        emit_signal("on_floor_status_change", true)
+        emit_signal("on_land", lastFrameVelocity)
         if lastFrameVelocity.y > 250:
             landParticles.restart()
 
@@ -118,16 +119,8 @@ func _process(delta):
 
     was_on_floor = is_on_floor()
 
-    if $SqueezeTimer.is_stopped() and $SquashTimer.is_stopped():
-        targetScale = Vector2(1, 1)
-
-    var lerpVelocity = GROUND_SCALE_LERP_VELOCITY if is_on_floor() else AIR_SCALE_LERP_VELOCITY
-    player.scale.x = lerp(player.scale.x, targetScale.x if facingRight else -targetScale.x, lerpVelocity * delta)
-    player.scale.y = lerp(player.scale.y, targetScale.y, lerpVelocity * delta)
-
     if Input.is_action_just_pressed("jump") and (state == GROUND or air_jump_charges >= 1):
-        targetScale = Vector2(0.8, 1.1)
-        $SqueezeTimer.start()
+        emit_signal("on_jump")
         if can_ground_jump():
             # player gets a single jump from off the ground
             velocity.y = jump_velocity
@@ -159,13 +152,11 @@ func _process(delta):
     velocity = move_and_slide(velocity, UP)
     if velocity.x > 0:
         if not facingRight:
-            # immediately force player sprite to flip if changing direction
-            player.scale.x *= -1
+            emit_signal("on_direction_change", true)
         facingRight = true
     elif velocity.x < 0:
         if facingRight:
-            # immediately force player sprite to flip if changing direction
-            player.scale.x *= -1
+            emit_signal("on_direction_change", false)
         facingRight = false
 
     #WEAPONS
