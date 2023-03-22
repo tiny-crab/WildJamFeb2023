@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=2]
+[gd_scene load_steps=43 format=2]
 
 [ext_resource path="res://Player/Player.gd" type="Script" id=1]
 [ext_resource path="res://Hitboxes And Hurtboxes/Hurtbox.tscn" type="PackedScene" id=2]
@@ -6,6 +6,8 @@
 [ext_resource path="res://Player/Grappling Hook/GrappleHook.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Player/Weapons/Shotgun.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Assets/19 - DARK - Gunslinger/Gunslinger/Gunslinger 48x48 Sprite Sheet no weapons for sprite stacking.png" type="Texture" id=6]
+[ext_resource path="res://Player/PlayerSprite.gd" type="Script" id=7]
+[ext_resource path="res://Player/LandParticles.gd" type="Script" id=8]
 
 [sub_resource type="RectangleShape2D" id=26]
 extents = Vector2( 3.5, 12.5 )
@@ -137,10 +139,22 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8 ),
-"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
+"times": PoolRealArray( 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1 ),
 "update": 1,
-"values": [ 16, 9, 10, 11, 12, 13, 14, 15, 16 ]
+"values": [ 16, 9, 10, 11, 12, 13, 14, 15 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("WalkParticles:emitting")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.2, 0.3, 0.6, 0.7 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ false, true, false, true, false ]
 }
 
 [sub_resource type="AnimationNodeAnimation" id=28]
@@ -197,6 +211,48 @@ graph_offset = Vector2( 19, 3 )
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=23]
 
+[sub_resource type="Gradient" id=35]
+offsets = PoolRealArray( 0.00487805, 1 )
+colors = PoolColorArray( 1, 1, 1, 0.807843, 0.780392, 0.780392, 0.780392, 0 )
+
+[sub_resource type="GradientTexture" id=36]
+gradient = SubResource( 35 )
+
+[sub_resource type="ParticlesMaterial" id=37]
+lifetime_randomness = 0.5
+emission_shape = 2
+emission_box_extents = Vector3( 4.5, 2, 0 )
+flag_disable_z = true
+direction = Vector3( 0, -1, 0 )
+gravity = Vector3( 0, 2, 0 )
+initial_velocity = 10.0
+initial_velocity_random = 1.0
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+angle = 360.0
+angle_random = 1.0
+scale_random = 1.0
+color = Color( 0.654902, 0.654902, 0.654902, 0.588235 )
+color_ramp = SubResource( 36 )
+
+[sub_resource type="Gradient" id=39]
+colors = PoolColorArray( 0.752941, 0.752941, 0.752941, 0.784314, 0.752941, 0.752941, 0.752941, 0.129412 )
+
+[sub_resource type="GradientTexture" id=40]
+gradient = SubResource( 39 )
+
+[sub_resource type="ParticlesMaterial" id=38]
+flag_disable_z = true
+direction = Vector3( 0, -2, 0 )
+spread = 15.0
+gravity = Vector3( 0, 9.8, 0 )
+initial_velocity = 10.0
+initial_velocity_random = 0.5
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+scale_random = 1.0
+color_ramp = SubResource( 40 )
+
 [node name="Player" type="KinematicBody2D"]
 collision_layer = 2
 script = ExtResource( 1 )
@@ -205,14 +261,17 @@ __meta__ = {
 }
 
 [node name="PlayerSprite" type="Sprite" parent="."]
-position = Vector2( 0, -24 )
+position = Vector2( 0, 4 )
 texture = ExtResource( 6 )
+centered = false
+offset = Vector2( -24, -52 )
 hframes = 9
 vframes = 13
-frame = 97
+frame = 9
+script = ExtResource( 7 )
 
 [node name="ShotgunPosition" type="Node2D" parent="PlayerSprite"]
-position = Vector2( -2, 7 )
+position = Vector2( 0, -20 )
 __meta__ = {
 "_edit_group_": true
 }
@@ -221,11 +280,18 @@ __meta__ = {
 z_index = 1
 
 [node name="Hurtbox" parent="PlayerSprite" instance=ExtResource( 2 )]
-position = Vector2( 0, 24 )
 
 [node name="CollisionShape2D" parent="PlayerSprite/Hurtbox" index="0"]
 position = Vector2( 0, -13 )
 shape = SubResource( 26 )
+
+[node name="SqueezeTimer" type="Timer" parent="PlayerSprite"]
+wait_time = 0.1
+one_shot = true
+
+[node name="SquashTimer" type="Timer" parent="PlayerSprite"]
+wait_time = 0.1
+one_shot = true
 
 [node name="GrappleHook" parent="." instance=ExtResource( 4 )]
 position = Vector2( 0, -16 )
@@ -266,6 +332,33 @@ anim_player = NodePath("../AnimationPlayer")
 active = true
 parameters/playback = SubResource( 23 )
 
+[node name="CoyoteTime" type="Timer" parent="."]
+wait_time = 0.15
+one_shot = true
+
+[node name="LandParticles" type="Particles2D" parent="."]
+emitting = false
+amount = 16
+one_shot = true
+explosiveness = 1.0
+local_coords = false
+process_material = SubResource( 37 )
+script = ExtResource( 8 )
+
+[node name="WalkParticles" type="Particles2D" parent="."]
+emitting = false
+amount = 3
+lifetime = 0.25
+explosiveness = 1.0
+randomness = 0.5
+local_coords = false
+process_material = SubResource( 38 )
+
+[connection signal="on_direction_change" from="." to="PlayerSprite" method="_on_Player_on_direction_change"]
+[connection signal="on_floor_status_change" from="." to="PlayerSprite" method="_on_Player_on_floor_status_change"]
+[connection signal="on_jump" from="." to="PlayerSprite" method="_on_Player_on_jump"]
+[connection signal="on_land" from="." to="PlayerSprite" method="_on_Player_on_land"]
+[connection signal="on_land" from="." to="LandParticles" method="_on_Player_on_land"]
 [connection signal="area_entered" from="PlayerSprite/Hurtbox" to="." method="_on_Hurtbox_area_entered"]
 [connection signal="area_entered" from="InteractHitbox" to="." method="_on_InteractHitbox_area_entered"]
 [connection signal="area_exited" from="InteractHitbox" to="." method="_on_InteractHitbox_area_exited"]
