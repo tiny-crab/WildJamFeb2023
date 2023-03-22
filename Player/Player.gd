@@ -128,7 +128,9 @@ func _process(delta):
             state = JUMP
 
     if Input.is_action_just_released("jump") and (state == JUMP):
-        # just ramp down on upward velocity quickly, so that player transitions into fall gravity more quickly
+        # this is part of the variable jump
+        # cutting velocity suddenly when the player releases the jump button forces the character into the peak of the jump arc
+        # falling velocity will kick in soon after and push the player back toward the ground
         velocity.y = velocity.y / 5
 
     if Input.is_action_pressed("hover_down") and state == JUMP and hover_jump_on:
