@@ -62,8 +62,6 @@ onready var grapplingHook = $GrappleHook
 onready var ShotgunPosition = $PlayerSprite/ShotgunPosition
 onready var Shotgun = $PlayerSprite/ShotgunPosition/Shotgun
 onready var coyoteTime = $CoyoteTime
-onready var landParticles = $LandParticles
-onready var walkParticles = $WalkParticles
 
 signal player_health_changed(newHealth)
 signal activated_teleporter()
@@ -112,8 +110,6 @@ func _process(delta):
     if !was_on_floor and is_on_floor():
         emit_signal("on_floor_status_change", true)
         emit_signal("on_land", lastFrameVelocity)
-        if lastFrameVelocity.y > 250:
-            landParticles.restart()
 
     lastFrameVelocity = velocity
 

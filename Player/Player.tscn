@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=2]
+[gd_scene load_steps=43 format=2]
 
 [ext_resource path="res://Player/Player.gd" type="Script" id=1]
 [ext_resource path="res://Hitboxes And Hurtboxes/Hurtbox.tscn" type="PackedScene" id=2]
@@ -7,6 +7,7 @@
 [ext_resource path="res://Player/Weapons/Shotgun.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Assets/19 - DARK - Gunslinger/Gunslinger/Gunslinger 48x48 Sprite Sheet no weapons for sprite stacking.png" type="Texture" id=6]
 [ext_resource path="res://Player/PlayerSprite.gd" type="Script" id=7]
+[ext_resource path="res://Player/LandParticles.gd" type="Script" id=8]
 
 [sub_resource type="RectangleShape2D" id=26]
 extents = Vector2( 3.5, 12.5 )
@@ -266,7 +267,7 @@ centered = false
 offset = Vector2( -24, -52 )
 hframes = 9
 vframes = 13
-frame = 15
+frame = 9
 script = ExtResource( 7 )
 
 [node name="ShotgunPosition" type="Node2D" parent="PlayerSprite"]
@@ -342,6 +343,7 @@ one_shot = true
 explosiveness = 1.0
 local_coords = false
 process_material = SubResource( 37 )
+script = ExtResource( 8 )
 
 [node name="WalkParticles" type="Particles2D" parent="."]
 emitting = false
@@ -356,6 +358,7 @@ process_material = SubResource( 38 )
 [connection signal="on_floor_status_change" from="." to="PlayerSprite" method="_on_Player_on_floor_status_change"]
 [connection signal="on_jump" from="." to="PlayerSprite" method="_on_Player_on_jump"]
 [connection signal="on_land" from="." to="PlayerSprite" method="_on_Player_on_land"]
+[connection signal="on_land" from="." to="LandParticles" method="_on_Player_on_land"]
 [connection signal="area_entered" from="PlayerSprite/Hurtbox" to="." method="_on_Hurtbox_area_entered"]
 [connection signal="area_entered" from="InteractHitbox" to="." method="_on_InteractHitbox_area_entered"]
 [connection signal="area_exited" from="InteractHitbox" to="." method="_on_InteractHitbox_area_exited"]
