@@ -18,6 +18,30 @@ tracks/0/keys = {
 "update": 1,
 "values": [ 0, 4, 5, 6, 7, 0 ]
 }
+tracks/1/type = "value"
+tracks/1/path = NodePath("../Hitbox/CollisionShape2D:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 1,
+"values": [ true, false, true ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("../Hitbox/CollisionShape2D:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 1,
+"values": [ false, true, false ]
+}
 
 [sub_resource type="Animation" id=2]
 length = 0.001
@@ -33,6 +57,30 @@ tracks/0/keys = {
 "update": 0,
 "values": [ 4 ]
 }
+tracks/1/type = "value"
+tracks/1/path = NodePath("../Hitbox/CollisionShape2D:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ true ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("../Hitbox/CollisionShape2D:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ false ]
+}
 
 [node name="Shotgun" type="Node2D"]
 script = ExtResource( 2 )
@@ -44,13 +92,21 @@ hframes = 4
 vframes = 5
 frame = 4
 
-[node name="RayCast2D" type="RayCast2D" parent="."]
-position = Vector2( 17, 0 )
-enabled = true
-cast_to = Vector2( 400, 0 )
-collision_mask = 4
-
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 root_node = NodePath("../ShotgunSprite")
 anims/Fire = SubResource( 1 )
 anims/RESET = SubResource( 2 )
+
+[node name="Hitbox" type="Area2D" parent="."]
+position = Vector2( 27, 0 )
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionPolygon2D" parent="Hitbox"]
+visible = false
+position = Vector2( 32.5, 0 )
+scale = Vector2( 4.5, 3 )
+polygon = PoolVector2Array( -10, 0, 10, -10, 10, 10 )
+disabled = true
+
+[connection signal="body_shape_entered" from="Hitbox" to="." method="_on_Hitbox_body_shape_entered"]
